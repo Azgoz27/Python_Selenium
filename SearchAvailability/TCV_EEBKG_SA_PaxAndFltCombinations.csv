@@ -1,0 +1,15 @@
+TCNumber;origin;destination;type;outboundDate;inboundDate;outbound;inbound;adult;child;infant;EVO;elementsRM;elementsOSI;fakeIp
+TC#1;BOS;RAI;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;0;0;$none;$none;$none;$RNDBOOL
+TC#2;FOR;CDG;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,5);0;0;$none;$none;$none;$RNDBOOL
+TC#3;FOR;SID;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;1;0;$none;$none;$none;$RNDBOOL
+TC#4;LIS;SSA;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;0;1;$none;$none;$none;$RNDBOOL
+TC#5;LIS;FOR;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;$RNDINT(2,5);0;$none;$none;$none;$RNDBOOL
+TC#6;LIS;REC;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,5);$RNDINT(2,3);0;$none;$none;$none;$RNDBOOL
+TC#7;SSA;LIS;OW;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,3);$RNDINT(2,3);$RNDINT(2,#adult#);$none;$none;$none;$RNDBOOL
+TC#8;CDG;FOR;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;0;0;$none;$none;$none;$RNDBOOL
+TC#9;CDG;REC;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,5);0;0;$none;$none;$none;$RNDBOOL
+TC#10;CDG;SID;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;1;0;$none;$none;$none;$RNDBOOL
+TC#11;RAI;BOS;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;0;1;$none;$none;$none;$RNDBOOL
+TC#12;REC;LIS;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;1;$RNDINT(2,5);0;$none;$none;$none;$RNDBOOL
+TC#13;REC;CDG;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,5);$RNDINT(2,3);0;$none;$none;$none;$RNDBOOL
+TC#14;REC;SID;RT;$RNDDATE(90,105);$RNDDATE(110,120);$none;$none;$RNDINT(2,3);$RNDINT(2,3);$RNDINT(2,#adult#);$none;$none;$none;$RNDBOOL

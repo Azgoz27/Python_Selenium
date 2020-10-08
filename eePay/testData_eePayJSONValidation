@@ -1,0 +1,85 @@
+{
+    "passenger":
+    {
+        "firstName": "",
+        "title": "mrs",
+        "lastName": "",
+        "phoneNumber": "",
+        "phoneCode": "+387 987654321",
+        "email": ""
+    },
+    "flight":
+    {
+        "itinerary":
+        {
+            "origin": "DSS",
+            "passengerName": "Garcia Galarga",
+            "airlineName": "Tacv Cabo Verde Airlines",
+            "flights": [{"origin":"DSS","serviceClass":"A","segmentId":1,"fareBasis":"ARSN0BA","destination":"SID","tax":{"currency":"EUR","amount":"67.32"},"flightNumber":"621","stopOver":false,"departureDate":"2020-04-20T06:00:00+02:00","carrierCode":"VR"},{"origin":"SID","serviceClass":"A","segmentId":1,"fareBasis":"ARSN0BA","destination":"DSS","tax":{"currency":"EUR","amount":"67.32"},"flightNumber":"620","stopOver":false,"departureDate":"2020-05-20T22:50:00+02:00","carrierCode":"VR"}],
+            "airlineCode": "VR",
+            "originCountry": "SN",
+            "flightNumberFirstSeg": "621",
+            "passengerId": "1",
+            "taxTotal": {"currency":"EUR","amount":134.64}
+        }
+    },
+    "defaultCurrency": "EUR",
+    "parameters":
+    {
+        "PAYMENT_ITEM": "BOOK",
+        "FOPLOOKUPID": "8f4d3bdd-5fc4-4c62-b74f-79d09edaa8c8"
+    },
+    "metadata":
+    {
+        "session": "BWA-94C7CC97E2B63CB8-0006",
+        "version": 1,
+        "client": "bwa",
+        "module": "WEB",
+        "language": "en"
+    },
+    "formsOfPayment":
+    {
+        "sale":
+        {
+            "exchangeRate": 1,
+            "currency": "EUR",
+            "amount": 257.68,
+            "roundingUnit": 0.01,
+            "roundedAmount": 257.68,
+            "roundingMode": "HALF_UP"
+        },
+        "id": "8f4d3bdd-5fc4-4c62-b74f-79d09edaa8c8",
+        "fopOffers":
+        [
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"type":"UNSELECTED"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VINTI4","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VISA","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"MASTERCARD","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPER","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPERCARD","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"DINERS","type":"CARD","chargeType":"CREDIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"AMEX","type":"CARD","chargeType":"CREDIT"}},
+
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VINTI4","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VISA","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"MASTERCARD","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPER","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPERCARD","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"DINERS","type":"CARD","chargeType":"INSTALLMENT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"},{"exchangeRate":1.09013569,"currency":"USD","amount":280.9061645992,"roundingUnit":0.1,"roundedAmount":280.9,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"AMEX","type":"CARD","chargeType":"INSTALLMENT"}},
+
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VINTI4","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"VISA","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"MASTERCARD","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPER","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"HIPERCARD","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"DINERS","type":"CARD","chargeType":"DEBIT"}},
+        {"currencyOffers":[{"exchangeRate":1,"currency":"EUR","amount":100.00,"roundingUnit":0.01,"roundedAmount":100.00,"roundingMode":"HALF_UP"}],"fop":{"paymentFlowType":"AFTER_ORDER","cardType":"AMEX","type":"CARD","chargeType":"DEBIT"}}
+
+
+        ]
+    },
+    "total": "999.68",
+    "post3DSecureUrl": "https://tcvweb-eebkg-test.2e-systems.com/en/fb/payment-response/booking/TCV-94C7CC97E2B63CB8-0006",
+    "eVoucher": ""
+}

@@ -1,0 +1,396 @@
+"""
+Contains test cases for eeBook's search availability screen.
+"""
+
+import sys
+import os
+import json
+sys.path.append("../eeqcutils")
+sys.path.append("..")
+sys.path.append(os.getcwd())
+import unittest
+import datetime
+from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+from eeqcutils.standardSeleniumImports import *
+from eeqcutils import configurator, initlog
+from eeBookGEN.parametersGenerator import ScriptParameters
+from eeqcutils import eeBookJson
+from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
+from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+
+cfg = configurator.Configurator()
+baseURL = cfg.URL
+initlog.removeOldFile("eeBookSearchAvailability_TestSuite_", "./logs/", 30)
+initlog.removeOldFile("TC#", "./screenshots/", 30)
+initlog.removeOldFile("test_", "./screenshots/", 30)
+logger = initlog.Logger("logs/eeBookSearchAvailability_TestSuite_%s" % cfg.gridHost).getLogger()
+airline = cfg.airline
+sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
+
+
+class EEBKG_SA_Validations(unittest.TestCase):
+    """
+    Used for running eeBook Flight Search Screen test suite.
+    """
+    @classmethod
+    def setUpClass(cls):
+        if not os.path.isdir("./screenshots/"):
+            os.mkdir("screenshots")
+        if not os.path.isdir("./logs/"):
+            os.mkdir("logs")
+
+
+    def test_UndefinedRoute(self):
+        """
+        Check if correct error message is shown in case deep link is containing a undefined route.
+        :return:
+        """
+        logger.info("Test case: %s" % self._testMethodName)
+        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
+        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
+        # and if it failed screen shot is also taken.
+        self.caseSkipped = False
+        self.casePassed = False
+        self.driver = None
+
+        # expectedErrorCode="BADROUTE"
+        # Generate a outbound date
+        outDate = (datetime.datetime.now() + datetime.timedelta(days=3)).strftime("%d.%m.%Y")
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin="FRA",
+                                               destination=sp.destination,
+                                               adult=1,
+                                               child=0,
+                                               infant=0,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADROUTE"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        self.casePassed = True
+
+    def test_InvalidNumberOfPassengersBE(self):
+        """
+        Check if correct error message is shown in case deep link is containing an invalid number of passengers. This
+        validations are done on the BE side.
+        :return:
+        """
+        logger.info("Test case: %s" % self._testMethodName)
+        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
+        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
+        # and if it failed screen shot is also taken.
+        self.caseSkipped = False
+        self.casePassed = False
+        self.driver = None
+
+        # expectedErrorCode="TOOMANYPASSENGERS"
+        # Generate a outbound date
+        outDate = (datetime.datetime.now() + datetime.timedelta(days=3)).strftime("%d.%m.%Y")
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=10,
+                                               child=0,
+                                               infant=0,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="TOOMANYPASSENGERS"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=5,
+                                               child=5,
+                                               infant=0,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="TOOMANYPASSENGERS"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=5,
+                                               child=0,
+                                               infant=0,
+                                               junior=5)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="TOOMANYPASSENGERS"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=3,
+                                               child=3,
+                                               infant=0,
+                                               junior=4)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="TOOMANYINFANTS"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=outDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=3,
+                                               child=3,
+                                               infant=4,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYINFANTS"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        self.casePassed = True
+
+    def test_InvalidDate(self):
+        """
+        Check if correct error message is shown in case deep link contains invalid date.
+        :return:
+        """
+        logger.info("Test case: %s" % self._testMethodName)
+        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
+        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
+        # and if it failed screen shot is also taken.
+        self.caseSkipped = False
+        self.casePassed = False
+        self.driver = None
+
+        # Generate an outbound date
+        outDate = (datetime.datetime.now() + datetime.timedelta(days=3)).strftime("%d.%m.%Y")
+        # Generate a faulty inbound date
+        badInDate = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m.%Y")
+
+        # expectedErrorCode="BADDATE"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="RT",
+                                               outboundDate=outDate,
+                                               inboundDate=badInDate,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=10,
+                                               child=0,
+                                               infant=0,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADDATE"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # Generate a faulty outbound date
+        badOutDate = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%d.%m.%Y")
+
+        # expectedErrorCode="BADDATE"
+        response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                               system=cfg.environment,
+                                               routeType="OW",
+                                               outboundDate=badOutDate,
+                                               inboundDate=None,
+                                               origin=sp.origin,
+                                               destination=sp.destination,
+                                               adult=10,
+                                               child=0,
+                                               infant=0,
+                                               junior=0)
+
+        responseParsed = json.loads(response._content)
+        # Collect error code
+        errorCode = responseParsed["errors"]["error"][0]["code"]
+        # Compare the error codes
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADDATE"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+    def test_MissingParameters(self):
+        """
+        Check if correct error message is shown in case deep link is missing mandatory parameters.
+        :return:
+        """
+        logger.info("Test case: %s" % self._testMethodName)
+        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
+        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
+        # and if it failed screen shot is also taken.
+        self.caseSkipped = False
+        self.casePassed = False
+        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
+
+        # Generate a outbound date
+        outDate = (datetime.datetime.now() + datetime.timedelta(days=3)).strftime("%d.%m.%Y")
+        inDate = (datetime.datetime.now() + datetime.timedelta(days=6)).strftime("%d.%m.%Y")
+
+        # expectedErrorCode="ADT_TYPES_INVALID"
+        sp.useClass(self.driver, cfg).enterTestcase(self.driver,
+                                                    baseURL,
+                                                    sp.origin,
+                                                    sp.destination,
+                                                    "OW",
+                                                    outDate,
+                                                    inDate,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    sp.eVoucher,
+                                                    sp.elementsRm,
+                                                    sp.elementsOsi,
+                                                    '' if airline == "bwa" else sp.fakeIP
+                                                    )
+
+        errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "ADT_TYPES_INVALID"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+
+        # expectedErrorCode="DATE_DEPARTURE_INVALID"
+        sp.useClass(self.driver, cfg).enterTestcase(self.driver,
+                                                    baseURL,
+                                                    sp.origin,
+                                                    sp.destination,
+                                                    "OW",
+                                                    "",
+                                                    inDate,
+                                                    1,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    sp.eVoucher,
+                                                    sp.elementsRm,
+                                                    sp.elementsOsi,
+                                                    '' if airline == "bwa" else sp.fakeIP
+                                                    )
+
+        errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "DATE_DEPARTURE_INVALID"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="NO_ORIGIN"
+        sp.useClass(self.driver, cfg).enterTestcase(self.driver,
+                                                    baseURL,
+                                                    "",
+                                                    sp.destination,
+                                                    "OW",
+                                                    outDate,
+                                                    inDate,
+                                                    1,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    sp.eVoucher,
+                                                    sp.elementsRm,
+                                                    sp.elementsOsi,
+                                                    '' if airline == "bwa" else sp.fakeIP
+                                                    )
+
+        errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "NO_ORIGIN"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        # expectedErrorCode="NO_DESTIN"
+        sp.useClass(self.driver, cfg).enterTestcase(self.driver,
+                                                    baseURL,
+                                                    sp.origin,
+                                                    "",
+                                                    "OW",
+                                                    outDate,
+                                                    inDate,
+                                                    1,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    sp.eVoucher,
+                                                    sp.elementsRm,
+                                                    sp.elementsOsi,
+                                                    '' if airline == "bwa" else sp.fakeIP
+                                                    )
+
+        errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
+        logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "NO_DESTIN"), logger.info("WARNING: Wrong error code returned.")
+        logger.info("Correct error code found: %s" % errorCode)
+
+        self.casePassed = True
+
+
+    def tearDown(self):
+        # If the case was skipped, skip everything below.
+        if ((not self.caseSkipped and not self.casePassed) or self.caseSkipped) and self.driver:
+            # If the case failed, take a screen shot.
+            try:
+                self.driver.implicitly_wait(0)
+                logger.info(self.driver.find_element_by_id("errorsection").text)
+                self.driver.implicitly_wait(30)
+            except:
+                self.driver.implicitly_wait(30)
+                pass
+            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+        # If the driver is still active, close it.
+        if self.driver:
+            time.sleep(2)
+            self.driver.quit()
+            time.sleep(2)
