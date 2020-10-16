@@ -18,9 +18,11 @@ from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 import json
+import requests
 
 cfg = configurator.Configurator()
 baseURL = "http://qba.2e-systems.com:7200/qcpay/"
+headers = {"Content-Type": "application/json"}
 initlog.removeOldFile("eeBook_eePayFieldsValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
@@ -119,7 +121,7 @@ testData = [  # Valid input field data for CC
              }
 ]
 
-class EEBKG_PD_ValidateFields(unittest.TestCase):
+class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
     """
     Used for running eePay widget screen input field test suite.
     """
@@ -134,9 +136,14 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         """
         Loads the eePay widget.
         """
+        requests.post(url="http://qba.2e-systems.com:18199/qcPayUpdate",
+                      json=widgetData,
+                      headers=headers)
+
+        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         time.sleep(5)
         self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
-
+        # TODO
         # mambo jumbo, ignore, need to setup wait for page to load
         # self.driver.implicitly_wait(10)
         # waitForPageToLoad(driver, selector="availability", how=By.CLASS_NAME, timeoutSeconds=5, errorSelector="alert-danger")
@@ -251,9 +258,8 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
         self.enterFields(**testData[0])
@@ -272,8 +278,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates error messages are shown when invalid max char input data is entered for CC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
         self.enterFields(**testData[1])
@@ -295,8 +300,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates if the Pay button is disabled when no input has been made for CC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
         self.enterFields(**testData[2])
@@ -316,8 +320,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates if error messages are shown when invalid character input data is entered for CC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
         self.enterFields(**testData[3])
@@ -339,12 +342,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates no error messages are shown when valid input data is entered for DC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
-        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
-        # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
         self.selectDebitCard()
@@ -365,8 +363,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates error messages are shown when invalid max char input data is entered for DC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
         self.selectDebitCard()
@@ -390,8 +387,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates if the Pay button is disabled when no input has been made for DC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
         self.selectDebitCard()
@@ -413,8 +409,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         Validates if error messages are shown when invalid character input data is entered for DC.
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
         self.selectDebitCard()

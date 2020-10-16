@@ -5,10 +5,10 @@ Contains test cases for eeBook's included cabin baggage and checked baggage comp
 # eeBookGEN root folder and not the folder where this script actually is...
 import sys
 import os
+import unittest2 as unittest
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
 from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
@@ -20,10 +20,10 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 cfg = configurator.Configurator()
 testData = UniversalCaseReader.getCasesFromFile("./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
 baseURL = cfg.URL
-initlog.removeOldFile("eeBookIncludedBags_TestSuite_", "../", 30)
+initlog.removeOldFile("eeBookIncludedBags_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("eeBookIncludedBags_TestSuite_%s" % cfg.gridHost).getLogger()
+logger = initlog.Logger("logs/eeBookIncludedBags_TestSuite_%s" % cfg.gridHost).getLogger()
 airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
@@ -124,7 +124,8 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                 time.sleep(1)
 
                 # Create a dictionary of Ticket type names, cabin baggages and checked baggages
-                includedBaggageList = zip(fareFamilyNamesList, (zip(cabinBaggageList, checkedBaggageList)))
+                includedBaggageListOutbound = zip(fareFamilyNamesList, (zip(cabinBaggageList, checkedBaggageList)))
+                includedBaggageListInbound = zip(fareFamilyNamesList, (zip(cabinBaggageList, checkedBaggageList)))
 
                 # Select the Fare Type
                 sp.useClass(self.driver, cfg).selectFlight(routeType=test.type,
@@ -150,16 +151,16 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                     inboundFareName = str(activeInboundFare.find_element_by_class_name("basket-flight__compartment").text)
 
                 # Compare the active Outbound Ticket Type with the list of Ticket Types to get the needed baggage allowances
-                for ticketType in includedBaggageList:
-                    if ticketType[0].lower() == outboundFareName.lower():
-                        outboundSelectedBaggage = ticketType
+                for ticketTypeOutbound in includedBaggageListOutbound:
+                    if ticketTypeOutbound[0].lower() == outboundFareName.lower():
+                        outboundSelectedBaggage = ticketTypeOutbound
                         break
 
                 # Compare the active Inbound Ticket Type with the list of Ticket Types to get the needed baggage allowances
                 if test.type == "RT":
-                    for ticketType in includedBaggageList:
-                        if ticketType[0].lower() == inboundFareName.lower():
-                            inboundSelectedBaggage = ticketType
+                    for ticketTypeInbound in includedBaggageListInbound:
+                        if ticketTypeInbound[0].lower() == inboundFareName.lower():
+                            inboundSelectedBaggage = ticketTypeInbound
                             break
 
                 # Proceed to the Pax screen
@@ -261,12 +262,14 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                     logger.info(
                         "Checking if the included baggage on the Availability and Summary screen are a match...")
                     if outboundSelectedBaggage == outboundBaggageList:
-                        logger.info("Included Outbound Baggage on the Availability and Summary screen are the same!")
+                        logger.info("SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
                     else:
                         self.failSubTest()
                     if test.type == "RT":
+                        logger.info(
+                            "Checking if the included baggage on the Availability and Summary screen are a match...")
                         if inboundSelectedBaggage == inboundBaggageList:
-                            logger.info("Included Outbound Baggage on the Availability and Summary screen are the same!")
+                            logger.info("SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
                         else:
                             self.failSubTest()
 

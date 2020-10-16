@@ -1,6 +1,5 @@
 from unittest import TestLoader, TestSuite
 from HtmlTestRunner import HTMLTestRunner
-#from HTMLTestRunner import HTMLTestRunner
 
 # Search Availability script imports
 from eeBookGEN.SearchAvailability.eeBookSearchAvailabilityCombinations_TestSuite import EEBKG_SA_PaxAndFltCombinations
@@ -22,30 +21,56 @@ from eeBookGEN.PassengersData.eeBookTravelDocumentValidation_TestSuite import EE
 # Summary Screen script imports
 from eeBookGEN.SummaryScreen.eeBookBasketHidden import EEBKG_SS_BasketHidden
 from eeBookGEN.SummaryScreen.eeBookIncludedBags import EEBKG_SS_IncludedBags
+# eePay widget script imports
+from eeBookGEN.eePay.eeBook_eePay_Compare_Payments import eeBook_eePay_Compare_Payments
+from eeBookGEN.eePay.eeBook_eePayFieldsValidation_TestSuite import EEBKG_EEPAY_ValidateFields
+from eeBookGEN.eePay.eeBook_eePayJSONValidation_TestSuite import EEBKG_EEPAY_ValidateJSON
+# eeBook to Amadeus comparison
+from eeBookGEN.eeBookToAmadeusComparison.eeBookToAmadeusCompareTests import EEBKG_GEN_eeBookToAmadeusCompareTests
 
-
-paxAndFlitCombinationsSuite= TestLoader().loadTestsFromTestCase(EEBKG_SA_PaxAndFltCombinations)
-searchAvailabilityValidationsSuite= TestLoader().loadTestsFromTestCase(EEBKG_SA_Validations)
-calendarDatesAndPricesSuite= TestLoader().loadTestsFromTestCase(EEBKG_AV_CalendarDatesAndPrices)
-fareFamiliesModalSuite= TestLoader().loadTestsFromTestCase(EEBKG_AV_FareFamiliesModal)
-fareRulesModalSuite= TestLoader().loadTestsFromTestCase(EEBKG_AV_FareRulesModal)
+paxAndFlitCombinationsSuite = TestLoader().loadTestsFromTestCase(EEBKG_SA_PaxAndFltCombinations)
+searchAvailabilityValidationsSuite = TestLoader().loadTestsFromTestCase(EEBKG_SA_Validations)
+calendarDatesAndPricesSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_CalendarDatesAndPrices)
+fareFamiliesModalSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_FareFamiliesModal)
+fareRulesModalSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_FareRulesModal)
 flightDetailsSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_FlightDetailsModal)
-preselectedPriceSuite= TestLoader().loadTestsFromTestCase(EEBKG_AV_PreselectedPrice)
-shoppingBasketComparisonSuite= TestLoader().loadTestsFromTestCase(EEBKG_AV_ShoppingBasketComparison)
+preselectedPriceSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_PreselectedPrice)
+shoppingBasketComparisonSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_ShoppingBasketComparison)
 taxModalSuite = TestLoader().loadTestsFromTestCase(EEBKG_AV_TaxModal)
-validatePaxDOBDropdownsSuite= TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateDOBDropdowns)
-validatePaxDropdownsSuite= TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateDropdowns)
-validatePaxFieldsSuite= TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateFields)
-FOCPaxSuite= TestLoader().loadTestsFromTestCase(EEBKG_PD_FOC_TestSuite)
-validatePaxTravelDocumentSuite= TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateTravelDocument)
-BasketHiddenSuite= TestLoader().loadTestsFromTestCase(EEBKG_SS_BasketHidden)
-IncludedBagsSuite= TestLoader().loadTestsFromTestCase(EEBKG_SS_IncludedBags)
+validatePaxDOBDropdownsSuite = TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateDOBDropdowns)
+validatePaxDropdownsSuite = TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateDropdowns)
+validatePaxFieldsSuite = TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateFields)
+FOCPaxSuite = TestLoader().loadTestsFromTestCase(EEBKG_PD_FOC_TestSuite)
+validatePaxTravelDocumentSuite = TestLoader().loadTestsFromTestCase(EEBKG_PD_ValidateTravelDocument)
+BasketHiddenSuite = TestLoader().loadTestsFromTestCase(EEBKG_SS_BasketHidden)
+IncludedBagsSuite = TestLoader().loadTestsFromTestCase(EEBKG_SS_IncludedBags)
+PaymentInfoSuite = TestLoader().loadTestsFromTestCase(eeBook_eePay_Compare_Payments)
+eePayValidateFieldsSuite = TestLoader().loadTestsFromTestCase(EEBKG_EEPAY_ValidateFields)
+eePayValidateJSONSuite = TestLoader().loadTestsFromTestCase(EEBKG_EEPAY_ValidateJSON)
+eeBookAmadeusCompareSuite = TestLoader().loadTestsFromTestCase(EEBKG_GEN_eeBookToAmadeusCompareTests)
 
-suite = TestSuite([paxAndFlitCombinationsSuite, searchAvailabilityValidationsSuite, calendarDatesAndPricesSuite,
-                  fareFamiliesModalSuite, fareRulesModalSuite, flightDetailsSuite, preselectedPriceSuite,
-                   shoppingBasketComparisonSuite, taxModalSuite, validatePaxDOBDropdownsSuite,
-                   validatePaxDropdownsSuite, validatePaxFieldsSuite, FOCPaxSuite, validatePaxTravelDocumentSuite,
-                   BasketHiddenSuite, IncludedBagsSuite])
+
+suite = TestSuite([paxAndFlitCombinationsSuite,
+                   searchAvailabilityValidationsSuite,
+                   calendarDatesAndPricesSuite,
+                   fareFamiliesModalSuite,
+                   fareRulesModalSuite,
+                   flightDetailsSuite,
+                   preselectedPriceSuite,
+                   shoppingBasketComparisonSuite,
+                   taxModalSuite,
+                   validatePaxDOBDropdownsSuite,
+                   validatePaxDropdownsSuite,
+                   validatePaxFieldsSuite,
+                   FOCPaxSuite,
+                   validatePaxTravelDocumentSuite,
+                   BasketHiddenSuite,
+                   IncludedBagsSuite,
+                   PaymentInfoSuite,
+                   eePayValidateFieldsSuite,
+                   eePayValidateJSONSuite,
+                   eeBookAmadeusCompareSuite
+                   ])
 
 runner = HTMLTestRunner(output="eeBookGEN_Reports",
                         combine_reports=True,

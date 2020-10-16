@@ -21,7 +21,7 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 cfg = configurator.Configurator()
 dbConnection = pymysql.connect(host=cfg.host, port=cfg.port, user=cfg.user, passwd=cfg.passwd, db=cfg.db)
 baseURL = cfg.URL
-initlog.removeOldFile("eeBook_eePay_Compare_Payments.py", "./logs", 30)
+initlog.removeOldFile("eeBook_eePay_Compare_Payments.py", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBook_eePay_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
@@ -32,7 +32,6 @@ sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 class PaymentInfo:
     """
-
     """
 
     def __init__(self, pnr, status, method, currency):
@@ -46,7 +45,6 @@ class PaymentInfo:
 
 class Transaction:
     """
-
     """
 
     def __init__(self, transType, currency, amount):
@@ -57,7 +55,6 @@ class Transaction:
 
 def getBookingInfoFromDB(whatToGet, dayInterval, bookingStatus):
     """
-
     :param whatToGet:
     :param dayInterval:
     :param bookingStatus:
@@ -135,7 +132,7 @@ def getAPIPaymentInfo():
                     transactionInfo = payment
                     break
         if not transactionInfo:
-            logger.critical("NO PAYMENT FOUND FOR PNR: {}".format(pnr[0]))
+            logger.critical("WARNING: NO PAYMENT FOUND FOR PNR: {}".format(pnr[0]))
             break
 
         payment = PaymentInfo(pnr=pnr[0],
@@ -184,7 +181,7 @@ class eeBook_eePay_Compare_Payments(unittest.TestCase):
                     logger.info("Checking payments for: {}...".format(paymentOne.pnr, paymentTwo.pnr))
                     difference = DeepDiff(paymentOne, paymentTwo)
                     if not difference:
-                        logger.info("Payments are correct!")
+                        logger.info("SUCCESS: Payments are correct!")
                     else:
-                        logger.critical("Difference found...")
+                        logger.critical("FAIL: Difference found...")
                         logger.critical(pprint(difference))

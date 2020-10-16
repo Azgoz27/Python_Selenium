@@ -72,9 +72,9 @@ class EEBKG_AV_PreselectedPrice(unittest.TestCase):
         selectedPrice = float(activePrice.find_elements_by_class_name("amount")[0].text)
         # Compare all offered prices with the selected price to determine if the lowest price is selected by default
         if prices[0] == selectedPrice:
-            logger.info("Lowest {} price is correctly selected by default.".format(direction))
+            logger.info("SUCCESS: Lowest {} price is correctly selected by default.".format(direction))
         else:
-            logger.info("WARNING: {} lowest price is NOT selected by default!".format(direction))
+            logger.info("FAIL: {} lowest price is NOT selected by default!".format(direction))
             self.failSubTest()
 
     def test_CheckPreselectedPrices(self):

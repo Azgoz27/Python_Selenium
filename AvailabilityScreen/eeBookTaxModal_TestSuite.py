@@ -95,7 +95,7 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
 
             # Close the tax modal
             self.driver.find_element_by_class_name("close--tax-details").click()
-            logger.info("Tax modal successfully checked!")
+            logger.info("SUCCESS: Tax modal successfully checked!")
             time.sleep(2)
             # Parse the Taxes per Pax Type from the Flight Price basket
             taxBasketList = []
@@ -120,24 +120,24 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
 
         # Compare the basket and modal taxes per pax type
         if str(round(adultModalTax, 2)) == str(adultBasketTax):
-            logger.info("Adult Tax in modal and basket are the same!")
+            logger.info("SUCCESS: Adult Tax in modal and basket are the same!")
         else:
-            logger.info("WARNING: Adult Tax in modal and basket are NOT the same!")
+            logger.info("FAIL: Adult Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(juniorModalTax, 2)) == str(juniorBasketTax):
-            logger.info("Junior Tax in modal and basket are the same!")
+            logger.info("SUCCESS: Junior Tax in modal and basket are the same!")
         else:
-            logger.info("WARNING: Junior Tax in modal and basket are NOT the same!")
+            logger.info("FAIL: Junior Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(childModalTax, 2)) == str(childBasketTax):
-            logger.info("Child Tax in modal and basket are the same!")
+            logger.info("SUCCESS: Child Tax in modal and basket are the same!")
         else:
-            logger.info("WARNING: Child Tax in modal and basket are NOT the same!")
+            logger.info("FAIL: Child Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(infantModalTax, 2)) == str(infantBasketTax):
-            logger.info("Infant Tax in modal and basket are the same!")
+            logger.info("SUCCESS: Infant Tax in modal and basket are the same!")
         else:
-            logger.info("WARNING: Infant Tax in modal and basket are NOT the same!")
+            logger.info("FAIL: Infant Tax in modal and basket are NOT the same!")
             self.failSubTest()
 
     def test_CheckTaxModal(self):

@@ -23,7 +23,7 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 
 cfg = configurator.Configurator()
 baseURL = cfg.URL
-initlog.removeOldFile("eeBookFieldsValidation_TestSuite_", "./logs", 30)
+initlog.removeOldFile("eeBookFieldsValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBookFieldsValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
@@ -45,14 +45,20 @@ testData = [  # Valid input field data
              "lastName": "McTesterson",
              "phoneNumber": "093117666",
              "email": "tester.mctesterson@email.com",
-             "fqtvNumber": sp.getFQTVNo()},
+             # TODO
+             # sp.getFQTVNo() method returns wrong data, needs to be checked
+             #"fqtvNumber": sp.getFQTVNo()},
+             "fqtvNumber": "0123456789"},
 
             # Invalid input field data
             {"firstName": randomString,
              "lastName": randomString,
              "phoneNumber": "123ABC",
              "email": "noemail.com",
-             "fqtvNumber": sp.getFQTVNo() + "A"},
+            # TODO
+            # sp.getFQTVNo() method returns wrong data, needs to be checked
+             #"fqtvNumber": sp.getFQTVNo() + "A"},
+             "fqtvNumber": "0123456789A"},
 
             # No input field data
             {"firstName": "",
@@ -162,6 +168,7 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
                 # Enter FQTV number
                 fqtvNumberElem = "fqtvNumber" + paxElem % (passenger, paxNumber)
                 #self.driver.find_element_by_xpath('//*[@name="%s"]' % fqtvNumberElem).send_keys(fqtvNumber)
+                time.sleep(0.5)
                 self.driver.find_element_by_name(fqtvNumberElem).send_keys(fqtvNumber)
                 passengerElements[fqtvNumberElem] = "name"
         self.driver.find_element_by_xpath("//button[contains(@class, 'btn-primary')]").click()

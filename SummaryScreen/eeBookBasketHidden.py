@@ -91,13 +91,13 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
                         logger.info("Availability Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Availability Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
                         logger.info("Availability Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Availability Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 self.driver.find_element_by_xpath("//button[contains(@class, 'btn-primary')]").click()
@@ -114,13 +114,13 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
                         logger.info("Passenger Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Passenger Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
                         logger.info("Passenger Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Passenger Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 # Proceed to the Anx Screen
@@ -131,13 +131,13 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
                         logger.info("Ancillary Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Ancillary Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
                         logger.info("Ancillary Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("WARNING! Ancillary Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 # Proceed to the Summary Screen
@@ -146,25 +146,23 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 time.sleep(2)
 
                 # Check if the basket is visible
+                # TODO
                 #Not a good approach, need to find a different way to test this for BWA
                 if airline == "bwa":
                     try:
                         #self.driver.find_element_by_class_name("basket-xs").is_displayed()
                         self.driver.find_element_by_class_name("basket-xs").click()
-                        logger.info("WARNING! Summary Screen: BASKET IS VISIBLE!")
+                        logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
                         self.failSubTest()
                     except:
-                        logger.info("Summary Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
 
                 else:
                     if not self.driver.find_element_by_class_name("header__basket").is_displayed():
-                        logger.info("Summary Screen: BASKET IS NOT VISIBLE!")
+                        logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
                     else:
-                        logger.info("WARNING! Summary Screen: BASKET IS VISIBLE!")
+                        logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
                         self.failSubTest()
-
-                # TODO
-                # need to see if I can implement the basket checking better for BWA
 
     def skipUpsellScreen(self):
         """

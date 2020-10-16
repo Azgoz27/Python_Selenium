@@ -63,7 +63,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
             sp.useClass(self.driver, cfg).waitForSplashScreenToDissapear(self.driver)
             return flightCalendar
         except:
-            logger.info("WARNING: Couldn't read the {} calendar dates.".format(direction))
+            logger.info("FAIL: Couldn't read the {} calendar dates.".format(direction))
             self.failSubTest()
 
     def checkCalendarPrices(self, flightDirection, dateDirection, calendarDirection):
@@ -72,7 +72,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
             self.readCalendar(flightDirection)[dateDirection].click()
             sp.useClass(self.driver, cfg).waitForSplashScreenToDissapear(self.driver)
         except:
-            logger.info("WARNING: Couldn't open {} calendar in the past or next week.".format(flightDirection))
+            logger.info("FAIL: Couldn't open {} calendar in the past or next week.".format(flightDirection))
             self.failSubTest()
 
         # There is no saved price at the start of the script to compare with the previously saved price
@@ -97,7 +97,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
                         flightDate.click()
                         time.sleep(6)
                     except:
-                        logger.info("WARNING: Couldn't open an {} priced calendar date!".format(flightDirection))
+                        logger.info("FAIL: Couldn't open an {} priced calendar date!".format(flightDirection))
                         self.failSubTest()
 
                     # Find all the prices for selected date and sort them to get the lowest price in the list
@@ -120,16 +120,16 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
                     if not savedPrice:
                         logger.info("No previously active price and date saved yet.")
                     elif savedPrice not in calendarDateList.text:
-                        logger.info("WARNING: Previously saved {} active price and date are NOT found!".format(flightDirection))
+                        logger.info("FAIL: Previously saved {} active price and date are NOT found!".format(flightDirection))
                         self.failSubTest()
                     else:
-                        logger.info("Previously active calendar price and date are displayed correctly: {}".format(savedPrice.replace("\n", " ")))
+                        logger.info("SUCCESS: Previously active calendar price and date are displayed correctly: {}".format(savedPrice.replace("\n", " ")))
 
                     # Compare the lowest sorted price from the offered price list with the currently active calendar price to determine if the lowest price is selected as active by default
                     if flightPriceList[0] == calendarActivePrice:
-                        logger.info("Lowest {} active price is correctly selected by default: {}".format(flightDirection, calendarActivePrice))
+                        logger.info("SUCCESS: Lowest {} active price is correctly selected by default: {}".format(flightDirection, calendarActivePrice))
                     else:
-                        logger.info("WARNING: {} lowest active price is NOT selected by default!".format(flightDirection))
+                        logger.info("FAIL: {} lowest active price is NOT selected by default!".format(flightDirection))
                         self.failSubTest()
 
                     # Save the active calendar price and open the next valid date in the loop
@@ -148,6 +148,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
         """
         # setup the client to clear cache by route
         if airline == "bwa":
+            # TODO
             #### Sinisa: this does not work with "import suds", you have to import it in a different way
             client = suds.client.Client(url="http://bwaint:30010/eebkgbe_support?wsdl")
         elif airline == "tcv":

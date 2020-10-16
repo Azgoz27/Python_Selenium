@@ -73,8 +73,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADROUTE"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "BADROUTE"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
 
@@ -112,8 +112,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -133,8 +133,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -154,8 +154,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -175,8 +175,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYINFANTS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -196,8 +196,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYINFANTS"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "TOOMANYINFANTS"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
 
@@ -237,8 +237,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADDATE"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "BADDATE"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # Generate a faulty outbound date
         badOutDate = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%d.%m.%Y")
@@ -261,8 +261,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADDATE"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "BADDATE"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
     def test_MissingParameters(self):
         """
@@ -301,8 +301,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "ADT_TYPES_INVALID"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "ADT_TYPES_INVALID"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
 
         # expectedErrorCode="DATE_DEPARTURE_INVALID"
@@ -325,8 +325,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "DATE_DEPARTURE_INVALID"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "DATE_DEPARTURE_INVALID"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="NO_ORIGIN"
         sp.useClass(self.driver, cfg).enterTestcase(self.driver,
@@ -348,8 +348,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "NO_ORIGIN"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "NO_ORIGIN"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="NO_DESTIN"
         sp.useClass(self.driver, cfg).enterTestcase(self.driver,
@@ -371,8 +371,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
         logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "NO_DESTIN"), logger.info("WARNING: Wrong error code returned.")
-        logger.info("Correct error code found: %s" % errorCode)
+        assert (errorCode == "NO_DESTIN"), logger.info("FAIL: Wrong error code returned.")
+        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
 

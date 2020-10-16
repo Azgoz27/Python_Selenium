@@ -33,7 +33,7 @@ with open("./eePay/testData_eePayJSONValidation") as json_file:
 
 
 
-class EEBKG_PD_ValidateFields(unittest.TestCase):
+class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
     """
     Used for running eePay widget screen input field test suite.
     """
@@ -50,13 +50,6 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         """
         time.sleep(5)
         self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
-
-        # mambo jumbo, ignore, need to setup wait for page to load
-        # self.driver.implicitly_wait(10)
-        # waitForPageToLoad(driver, selector="availability", how=By.CLASS_NAME, timeoutSeconds=5, errorSelector="alert-danger")
-        # Find the element by applying explicit wait on it and then click on it
-        # WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@id='skeleton_main']/div[1]/div[2]/div/a"))).click()
-        # waitForSplashScreenToDissapear(self.driver)
 
     def selectDebitCard(self):
         """

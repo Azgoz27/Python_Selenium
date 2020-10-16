@@ -20,7 +20,7 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 cfg = configurator.Configurator()
 testData = UniversalCaseReader.getCasesFromFile("./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
 baseURL = cfg.URL
-initlog.removeOldFile("eeBookShoppingBasketComparison_TestSuite_", "./logs", 30)
+initlog.removeOldFile("eeBookShoppingBasketComparison_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBookShoppingBasketComparison_TestSuite_%s" % cfg.gridHost).getLogger()
@@ -129,45 +129,45 @@ class EEBKG_AV_ShoppingBasketComparison(unittest.TestCase):
         # Comparison of content in lower (main) and upper (drop-down) baskets
         # Comparison of upper and lower flight number lists
         if lowerFlightNumberList == upperFlightNumberList:
-            logger.info("Flight Numbers in both upper and lower baskets match!")
+            logger.info("SUCCESS: Flight Numbers in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Flight Numbers in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Flight Numbers in both upper and lower baskets are not the same!")
             self.failSubTest()
         # Comparison of upper and lower travel date lists
         if lowerTravelDateList == upperTravelDateList:
-            logger.info("Travel Dates in both upper and lower baskets match!")
+            logger.info("SUCCESS: Travel Dates in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Travel Dates in both upper and lower baskets is not the same!")
+            logger.info("FAIL: Travel Dates in both upper and lower baskets is not the same!")
             self.failSubTest()
         # Comparison of upper and lower departure time lists
         if lowerDepartureTimeList == upperDepartureTimeList:
-            logger.info("Departure Times in both upper and lower baskets match!")
+            logger.info("SUCCESS: Departure Times in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Departure Times in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Departure Times in both upper and lower baskets are not the same!")
             self.failSubTest()
         # Comparison of upper and lower arrival time lists
         if lowerArrivalTimeList == upperArrivalTimeList:
-            logger.info("Arrival Times in both upper and lower baskets match!")
+            logger.info("SUCCESS: Arrival Times in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Arrival Times in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Arrival Times in both upper and lower baskets are not the same!")
             self.failSubTest()
         # Comparison of upper and lower departing airport lists
         if lowerDepartureAirportList == upperDepartureAirportList:
-            logger.info("Departure Airports in both upper and lower baskets match!")
+            logger.info("SUCCESS: Departure Airports in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Departure Airports in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Departure Airports in both upper and lower baskets are not the same!")
             self.failSubTest()
         # Comparison of upper and lower arriving airport lists
         if lowerArrivalAirportList == upperArrivalAirportList:
-            logger.info("Arrival Airports in both upper and lower baskets match!")
+            logger.info("SUCCESS: Arrival Airports in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Arrival Airports in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Arrival Airports in both upper and lower baskets are not the same!")
             self.failSubTest()
         # Comparison of upper and lower total prices
         if lowerTotalPrice == upperTotalPrice:
-            logger.info("Total Price in both upper and lower baskets match!")
+            logger.info("SUCCESS: Total Price in both upper and lower baskets match!")
         else:
-            logger.info("WARNING: Total Price in both upper and lower baskets are not the same!")
+            logger.info("FAIL: Total Price in both upper and lower baskets are not the same!")
             self.failSubTest()
 
     def test_CompareShoppingBaskets(self):

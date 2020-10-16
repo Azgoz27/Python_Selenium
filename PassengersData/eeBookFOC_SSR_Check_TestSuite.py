@@ -25,10 +25,10 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 cfg = configurator.Configurator()
 baseURL = cfg.URL
 dbConnection = pymysql.connect(host=cfg.host, port=cfg.port, user=cfg.user, passwd=cfg.passwd, db=cfg.db)
-initlog.removeOldFile("eeBookFOC_SSR_Check_TestSuite_", "./", 30)
+initlog.removeOldFile("eeBookFOC_SSR_Check_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "../screenshots/", 30)
 initlog.removeOldFile("test_", "../screenshots/", 30)
-logger = initlog.Logger("eeBookFOC_SSR_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
+logger = initlog.Logger("logs/eeBookFOC_SSR_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 

@@ -77,19 +77,19 @@ class EEBKG_AV_FlightDetailsModal(unittest.TestCase):
                 flightNumber.find_element_by_class_name("flightNumber").click()
                 time.sleep(2)
             except:
-                logger.info("WARNING: {} flight details modal not found!!!".format(direction))
+                logger.info("FAIL: {} flight details modal not found!!!".format(direction))
                 self.failSubTest()
 
             # Close the modal if it's not empty
             # Sinisa: Verify here if the modal contains flightNumber. It's going to be a more precise check than
             # only checking if any text appeared.
             if not self.driver.find_element_by_class_name("flight-details-modal").text:
-                logger.info("WARNING: {} flight details modal is empty!!!".format(direction))
+                logger.info("FAIL: {} flight details modal is empty!!!".format(direction))
                 self.failSubTest()
             else:
                 self.driver.find_element_by_xpath(
                     "//div[@class='modal-content']//button[contains(@class, 'close')]").click()
-                logger.info("{} flight details modal successfully checked!".format(direction))
+                logger.info("SUCCESS: {} flight details modal successfully checked!".format(direction))
                 time.sleep(2)
 
     def test_CheckFlightDetailsModal(self):

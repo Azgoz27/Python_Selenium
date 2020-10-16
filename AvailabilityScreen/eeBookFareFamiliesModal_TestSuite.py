@@ -67,17 +67,17 @@ class EEBKG_AV_FareFamiliesModal(unittest.TestCase):
             fareFamiliesModalOutbound.find_element_by_class_name("journey-sort-options__fare-rules").click()
             time.sleep(2)
         except:
-            logger.info("WARNING: {} fare families modal not found!!!".format(direction))
+            logger.info("FAIL: {} fare families modal not found!!!".format(direction))
             self.failSubTest()
 
         # Close the modal if it's not empty
         if not self.driver.find_element_by_class_name("modal-body").text:
-            logger.info("WARNING: {} fare families modal is empty!!!".format(direction))
+            logger.info("FAIL: {} fare families modal is empty!!!".format(direction))
             self.failSubTest()
         else:
             self.driver.find_element_by_xpath(
                 "//div[@class='modal-content']//button[contains(@class, 'close')]").click()
-            logger.info("{} fare families modal successfully checked.".format(direction))
+            logger.info("SUCCESS: {} fare families modal successfully checked.".format(direction))
             time.sleep(2)
 
     def test_CheckFareFamiliesModal(self):

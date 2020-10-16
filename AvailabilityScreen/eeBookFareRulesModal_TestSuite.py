@@ -71,7 +71,7 @@ class EEBKG_AV_FareRulesModal(unittest.TestCase):
                 fareRulesModal[0].find_element_by_class_name("btn-link").click()
                 time.sleep(1)
             except:
-                logger.info("WARNING: {} fare rules modal not found!!!".format(direction))
+                logger.info("FAIL: {} fare rules modal not found!!!".format(direction))
                 self.failSubTest()
         elif direction == "inbound":
             try:
@@ -79,17 +79,17 @@ class EEBKG_AV_FareRulesModal(unittest.TestCase):
                 fareRulesModal[1].find_element_by_class_name("btn-link").click()
                 time.sleep(2)
             except:
-                logger.info("WARNING: {} fare rules modal not found!!!".format(direction))
+                logger.info("FAIL: {} fare rules modal not found!!!".format(direction))
                 self.failSubTest()
 
         # Close the modal if it's not empty
         if not self.driver.find_element_by_class_name("modal-body").text:
-            logger.info("WARNING: {} fare rules modal is empty!!!".format(direction))
+            logger.info("FAIL: {} fare rules modal is empty!!!".format(direction))
             self.failSubTest()
         else:
             self.driver.find_element_by_xpath(
                 "//div[@class='modal-content']//button[contains(@class, 'close')]").click()
-            logger.info("{} fare rules modal successfully checked.".format(direction))
+            logger.info("SUCCESS: {} fare rules modal successfully checked.".format(direction))
             time.sleep(2)
 
 
