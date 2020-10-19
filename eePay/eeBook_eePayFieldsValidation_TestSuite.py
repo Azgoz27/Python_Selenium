@@ -134,30 +134,22 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
 
     def loadEEPayWidget(self):
         """
-        Loads the eePay widget.
+        Initiate POST request and load the eePay widget.
         """
         requests.post(url="http://qba.2e-systems.com:18199/qcPayUpdate",
                       json=widgetData,
                       headers=headers)
 
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        time.sleep(5)
         self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
-        # TODO
-        # mambo jumbo, ignore, need to setup wait for page to load
-        # self.driver.implicitly_wait(10)
-        # waitForPageToLoad(driver, selector="availability", how=By.CLASS_NAME, timeoutSeconds=5, errorSelector="alert-danger")
-        # Find the element by applying explicit wait on it and then click on it
-        # WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@id='skeleton_main']/div[1]/div[2]/div/a"))).click()
-        # waitForSplashScreenToDissapear(self.driver)
 
-    def selectDebitCard(self):
+    def selectDebitCard(self, type):
         """
         Selects the Debit Card from eePay widget.
         """
         # Select DEBIT card
         self.driver.find_element_by_xpath('//*[@class="{}"]'.format("payment-dropdown")).click()
-        self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format("debit")).click()
+        self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format(type)).click()
 
     def enterFields(self, nameOnCard, cardNumber, expiryDate, cvc, addressLine1, addressLine2, city, zip, companyName, email, phone):
         """
@@ -345,7 +337,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
-        self.selectDebitCard()
+        self.selectDebitCard("debit")
         # Input test data
         self.enterFields(**testData[4])
         # Check for error messages
@@ -366,7 +358,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
-        self.selectDebitCard()
+        self.selectDebitCard("debit")
         # Input test data
         self.enterFields(**testData[5])
         # Setting up expected error messages
@@ -390,7 +382,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
-        self.selectDebitCard()
+        self.selectDebitCard("debit")
         # Input test data
         self.enterFields(**testData[2])
         # Check if the Pay button is disabled
@@ -412,7 +404,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
-        self.selectDebitCard()
+        self.selectDebitCard("debit")
         # Input test data
         self.enterFields(**testData[3])
         # Set up expected error messages

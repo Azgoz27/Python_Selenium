@@ -18,9 +18,12 @@ from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 import json
+import requests
+from selenium.webdriver.common.keys import Keys
 
 cfg = configurator.Configurator()
 baseURL = "http://qba.2e-systems.com:7200/qcpay/"
+headers = {"Content-Type": "application/json"}
 initlog.removeOldFile("eeBook_eePayJSONValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
@@ -31,7 +34,17 @@ sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 with open("./eePay/testData_eePayJSONValidation") as json_file:
     widgetData = json.load(json_file)
 
+FOP = {"credit", "debit", "installment"}
 
+testCards = {
+    "MASTERCARD": "5555555555554444",
+    "VISA": "4111111111111111",
+    "VINTI4": "6034450006000115",
+    "AMEX": "376449047333005",
+    "DINERS": "36490102462661",
+    "HIPER": "6370950000000005",
+    "HIPERCARD": "6062825624254001"
+    }
 
 class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
     """
@@ -46,299 +59,118 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
 
     def loadEEPayWidget(self):
         """
-        Loads the eePay widget.
+        Initiate POST request and load the eePay widget.
         """
-        time.sleep(5)
+        requests.post(url="http://qba.2e-systems.com:18199/qcPayUpdate",
+                      json=widgetData,
+                      headers=headers)
+
+        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
 
-    def selectDebitCard(self):
+    def selectFOP(self, FOP):
         """
-        Selects the Debit Card from eePay widget.
+        Selects the FOP from eePay widget drop down menu.
         """
-        # Select DEBIT card
+        # Select FOP type
         self.driver.find_element_by_xpath('//*[@class="{}"]'.format("payment-dropdown")).click()
-        self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format("debit")).click()
+        self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format(FOP)).click()
 
-    def enterFields(self, nameOnCard, cardNumber, expiryDate, cvc, addressLine1, addressLine2, city, zip, companyName, email, phone):
+    def checkAvailableCards(self, type):
+        #  Check if test cards are loaded
+        foundCards = []
+        availableCards = self.driver.find_elements_by_xpath('//*[@class="avilable-cards"]')
+        for availableCard in availableCards:
+            foundCard = availableCard.get_attribute("alt")
+            foundCards.append(foundCard.upper())
+        return foundCards
+
+    def enterCardNumber(self, cardNumber):
         """
-        :param nameOnCard: string
         :param cardNumber: integer
-        :param expiryDate: integer
-        :param cvc: integer
-        :param addressLine1: string
-        :param addressLine2: string
-        :param city: string
-        :param zip:
-        :param companyName: string
-        :param email: string
-        :return:
         """
-        # Enter name on card
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardHolder")).send_keys(nameOnCard)
-        eePayElements["cardHolder"] = "id"
-
         # Enter card number
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber")).send_keys(cardNumber)
-        eePayElements["cardNumber"] = "id"
+        cardNumberInput = self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber"))
+        # For some reason the .clear() command does not work when I run the code, even when debugging
+        # it does work when I use "evalute expression" option on that line
+        cardNumberInput.clear()
+        cardNumberInput.send_keys(Keys.CONTROL + "a")
+        cardNumberInput.send_keys(Keys.DELETE)
+        time.sleep(0.5)
+        cardNumberInput.send_keys(cardNumber)
 
-        # Enter expiry date
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("expirationDate")).send_keys(expiryDate)
-        eePayElements["expirationDate"] = "id"
 
-        # Enter CVC
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("verificationCode")).send_keys(cvc)
-        eePayElements["verificationCode"] = "id"
-
-        # Enter Address Line 1
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("addressLine1")).send_keys(addressLine1)
-        eePayElements["addressLine1"] = "id"
-
-        # Enter Address Line 2
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("addressLine2")).send_keys(addressLine2)
-        eePayElements["addressLine2"] = "id"
-
-        # Enter City
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("city")).send_keys(city)
-        eePayElements["city"] = "id"
-
-        # Enter ZIP
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("postalCode")).send_keys(zip)
-        eePayElements["postalCode"] = "id"
-
-        # Enter Company name
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("companyName")).send_keys(companyName)
-        eePayElements["companyName"] = "id"
-
-        # Enter Email
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("emailAddr")).send_keys(email)
-        eePayElements["emailAddr"] = "id"
-
-        # Enter Phone Number
-        self.driver.find_element_by_xpath('//*[@id="{}"]'.format("phoneNumber")).send_keys(phone)
-        eePayElements["phoneNumber"] = "id"
-
-        # Select Country
-        country = [i for i in range(1, sp.numberOfCountries(airline))]
-        Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("countryCode"))).select_by_index(random.choice(country))
-        # eePayElements["countryCode"] = "id"
-
-        if cfg.airline == "bwa":
-            # Select Country Phone Number
-            countryPhone = [i for i in range(1, sp.numberOfCountries(airline))]
-            Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("phoneCode"))).select_by_index(random.choice(countryPhone))
-            # eePayElements["phoneCode"] = "id"
-
-        # Switch back from the iFrame to default
-        # self.driver.switch_to.default_content()
-
-    def findErrorElements(self, elementDict):
+    def test_01_LoadAndCompareTestCards(self):
         """
-        Finds error elements if they exist.
-        :param elementDict: Dictionary with element names / locators to use (e.g. eePayElements = {})
-        :return: list of errors found
-        """
-        errorsFound = []
-        #self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
-
-        for element, locator in list(elementDict.items()):
-            try:
-                time.sleep(0.5)
-                self.driver.implicitly_wait(0)
-                self.driver.find_element_by_xpath('//input[@{}="{}" and @class="is-invalid form-control"]'.format(locator, element))
-                errorsFound.append(element)
-            except NoSuchElementException:
-                continue
-        return errorsFound
-
-    def test_01_validInputDataCC(self):
-        """
-        Validates no error messages are shown when valid input data is entered for CC.
+        Loads the test cards, iterate through forms of payment and compares them with the test data cards.
         """
         logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
-        # Wait for eePay widget too load
+        # Load the eePay widget
         self.loadEEPayWidget()
-        # Input test data
-        self.enterFields(**testData[0])
-        # Check for error messages
-        found = self.findErrorElements(eePayElements)
 
-        if not found:
-            logger.info("SUCCESS: No errors were found")
-        else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
+        # Iterate through Form of Payment options, find the available cards and compare them to the test cards
+        for type in FOP:
+            self.selectFOP(type)
+            foundCards = self.checkAvailableCards(type)
+            if set(foundCards) == set(list(testCards)):
+                logger.info("SUCCESS: Displayed {} cards match the test cards.".format(type))
+            else:
+                logger.info("FAIL: Displayed {} cards DO NOT match the test cards.".format(type))
+                chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
+                                         filePrefix=self._testMethodName)
+                self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def test_02_invalidMaxCharInputDataCC(self):
+    def test_02_inputCardsAndValidatesImage(self):
         """
-        Validates error messages are shown when invalid max char input data is entered for CC.
+        Validates test cards input and image shown
         """
         logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         # Wait for eePay widget too load
         self.loadEEPayWidget()
-        # Input test data
-        self.enterFields(**testData[1])
-        # Setting up expected error messages
-        expected = list(eePayElements.keys())
-        # Check for error messages
-        found = self.findErrorElements(eePayElements)
+        # Iterate through Form of Payment options, find the loaded cards and compare them to the test cards
+        for type in FOP:
+            self.selectFOP(type)
+            logger.info("TESTING {} CARDS:".format(type.upper()))
+            # Input test data cards
+            for key, value in testCards.items():
+                # Input the test card
+                self.enterCardNumber(value)
+                # Read the generated card image
+                cardImage = self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber")).get_attribute("style").split("/")[
+                    3].split(".")[0].upper()
+                # Compare the generated card image with the test data key
+                if key in cardImage:
+                    logger.info("SUCCESS: Displayed {} card matches the test card.".format(key))
+                else:
+                    logger.info("FAIL: Displayed {} card DOES NOT match the test cards.".format(key))
+                    chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
+                                             filePrefix=self._testMethodName)
+                    self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-        if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
-        else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
-                        % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_03_noInputDataCC(self):
-        """
-        Validates if the Pay button is disabled when no input has been made for CC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Input test data
-        self.enterFields(**testData[2])
-        # Check if the Pay button is disabled
-        self.driver.switch_to.default_content()
-        enabled = self.driver.find_element_by_id("submit-button").is_enabled()
-
-        if not enabled:
-            logger.info("SUCCESS: The Pay button has been disabled.")
-        else:
-            logger.info("FAIL: The Pay button has not been disabled.")
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_04_invalidCharacterInputDataCC(self):
-        """
-        Validates if error messages are shown when invalid character input data is entered for CC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Input test data
-        self.enterFields(**testData[3])
-        # Set up expected error messages
-        expected = ["cardHolder", "cardNumber", "expirationDate", "verificationCode", "city", "emailAddr"]
-        # Check for found error messages
-        found = self.findErrorElements(eePayElements)
-
-        if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
-        else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
-                        % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_05_validInputDataDC(self):
-        """
-        Validates no error messages are shown when valid input data is entered for DC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
-        # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
-        # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Select DEBIT card
-        self.selectDebitCard()
-        # Input test data
-        self.enterFields(**testData[4])
-        # Check for error messages
-        found = self.findErrorElements(eePayElements)
-
-        if not found:
-            logger.info("SUCCESS: No errors were found")
-        else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_06_invalidMaxCharInputDataDC(self):
-        """
-        Validates error messages are shown when invalid max char input data is entered for DC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Select DEBIT card
-        self.selectDebitCard()
-        # Input test data
-        self.enterFields(**testData[5])
-        # Setting up expected error messages
-        expected = list(eePayElements.keys())
-        # Check for error messages
-        found = self.findErrorElements(eePayElements)
-
-        if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
-        else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
-                        % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_07_noInputDataDC(self):
-        """
-        Validates if the Pay button is disabled when no input has been made for DC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Select DEBIT card
-        self.selectDebitCard()
-        # Input test data
-        self.enterFields(**testData[2])
-        # Check if the Pay button is disabled
-        self.driver.switch_to.default_content()
-        enabled = self.driver.find_element_by_id("submit-button").is_enabled()
-
-        if not enabled:
-            logger.info("SUCCESS: The Pay button has been disabled.")
-        else:
-            logger.info("FAIL: The Pay button has not been disabled.")
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    def test_08_invalidCharacterInputDataDC(self):
-        """
-        Validates if error messages are shown when invalid character input data is entered for DC.
-        """
-        logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-        # Wait for eePay widget too load
-        self.loadEEPayWidget()
-        # Select DEBIT card
-        self.selectDebitCard()
-        # Input test data
-        self.enterFields(**testData[3])
-        # Set up expected error messages
-        expected = ["cardHolder", "cardNumber", "expirationDate", "verificationCode", "city", "emailAddr"]
-        # Check for found error messages
-        found = self.findErrorElements(eePayElements)
-
-        if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
-        else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
-                        % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-            self.fail("Test case: %s failed, check logs" % self._testMethodName)
+    # def test_03_noInputDataCC(self):
+    #     """
+    #     Validates if the Pay button is disabled when no input has been made for CC.
+    #     """
+    #     logger.info("Test case: %s" % self._testMethodName)
+    #     self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
+    #     # Wait for eePay widget too load
+    #     self.loadEEPayWidget()
+    #     # Input test data
+    #     self.enterFields(**testData[2])
+    #     # Check if the Pay button is disabled
+    #     self.driver.switch_to.default_content()
+    #     enabled = self.driver.find_element_by_id("submit-button").is_enabled()
+    #
+    #     if not enabled:
+    #         logger.info("SUCCESS: The Pay button has been disabled.")
+    #     else:
+    #         logger.info("FAIL: The Pay button has not been disabled.")
+    #         chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+    #         self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def tearDown(self):
         # If the driver is still active, close it.
