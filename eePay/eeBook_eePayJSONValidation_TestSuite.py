@@ -10,7 +10,6 @@ sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
 import unittest2 as unittest
-import random
 from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
@@ -34,21 +33,26 @@ sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 with open("./eePay/testData_eePayJSONValidation") as json_file:
     widgetData = json.load(json_file)
 
-FOP = {"credit", "debit", "installment"}
+FOP = {"credit", "debit"}  # "installment" is not being tested at this moment
 
-testCards = {
-    "MASTERCARD": "5555555555554444",
-    "VISA": "4111111111111111",
-    "VINTI4": "6034450006000115",
+testCardsCredit = {
+    "MASTERCARD": "5555666677778884",
+    "VISA": "4012001037141112",
     "AMEX": "376449047333005",
     "DINERS": "36490102462661",
     "HIPER": "6370950000000005",
     "HIPERCARD": "6062825624254001"
     }
 
+testCardsDebit = {
+    "MASTERCARD": "5555666677778884",
+    "VISA": "4012001037141112",
+    "VINTI4": "6034450006000115"
+    }
+
 class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
     """
-    Used for running eePay widget screen input field test suite.
+    Used for running eePay widget screen JSON validation test suite.
     """
     @classmethod
     def setUpClass(cls):
@@ -70,14 +74,15 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
 
     def selectFOP(self, FOP):
         """
-        Selects the FOP from eePay widget drop down menu.
+        Selects the Form of Payment from eePay widget drop down menu.
         """
-        # Select FOP type
         self.driver.find_element_by_xpath('//*[@class="{}"]'.format("payment-dropdown")).click()
         self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format(FOP)).click()
 
-    def checkAvailableCards(self, type):
-        #  Check if test cards are loaded
+    def checkAvailableCards(self):
+        """
+        Checks if available test card images are loaded on the widget and returns the found cards
+        """
         foundCards = []
         availableCards = self.driver.find_elements_by_xpath('//*[@class="avilable-cards"]')
         for availableCard in availableCards:
@@ -85,24 +90,35 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
             foundCards.append(foundCard.upper())
         return foundCards
 
+    def determineTestCards(self, type):
+        """
+        Checks the Form of Payment selected to return the correct set of test cards to use
+        """
+        if type == 'credit':
+            testCards = testCardsCredit
+        else:
+            testCards = testCardsDebit
+        return testCards
+
     def enterCardNumber(self, cardNumber):
         """
+        Inputs the card number into the field
         :param cardNumber: integer
         """
-        # Enter card number
-        cardNumberInput = self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber"))
-        # For some reason the .clear() command does not work when I run the code, even when debugging
-        # it does work when I use "evalute expression" option on that line
-        cardNumberInput.clear()
-        cardNumberInput.send_keys(Keys.CONTROL + "a")
-        cardNumberInput.send_keys(Keys.DELETE)
+        cardInput = self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber"))
+        # TODO
+        # For some reason the .clear() command below does not work when I run the code, even when debugging
+        # however, it does work when I use "evalute expression" option on the line, using dirty fix for now
+        cardInput.clear()
+        cardInput.send_keys(Keys.CONTROL + "a")
+        cardInput.send_keys(Keys.DELETE)
         time.sleep(0.5)
-        cardNumberInput.send_keys(cardNumber)
-
+        cardInput.send_keys(cardNumber)
+        time.sleep(0.5)
 
     def test_01_LoadAndCompareTestCards(self):
         """
-        Loads the test cards, iterate through forms of payment and compares them with the test data cards.
+        Loads the test cards, iterates through forms of payment and compares them with the test data cards.
         """
         logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
@@ -112,10 +128,15 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
         # Load the eePay widget
         self.loadEEPayWidget()
 
-        # Iterate through Form of Payment options, find the available cards and compare them to the test cards
+        # Iterate through Form of Payment options available and determine which test cards to use
         for type in FOP:
             self.selectFOP(type)
-            foundCards = self.checkAvailableCards(type)
+            testCards = self.determineTestCards(type)
+
+            # Find the available cards images
+            foundCards = self.checkAvailableCards()
+
+            # Compare the found card images to the test cards
             if set(foundCards) == set(list(testCards)):
                 logger.info("SUCCESS: Displayed {} cards match the test cards.".format(type))
             else:
@@ -126,51 +147,79 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
 
     def test_02_inputCardsAndValidatesImage(self):
         """
-        Validates test cards input and image shown
+        Validates test cards input if the correct image is shown in that field
         """
         logger.info("Test case: %s" % self._testMethodName)
-        # Wait for eePay widget too load
+
+        # Load the eePay widget
         self.loadEEPayWidget()
-        # Iterate through Form of Payment options, find the loaded cards and compare them to the test cards
+
+        # Iterate through Form of Payment options and determine which test cards to use
         for type in FOP:
             self.selectFOP(type)
+            testCards = self.determineTestCards(type)
             logger.info("TESTING {} CARDS:".format(type.upper()))
-            # Input test data cards
+
+            # Iterate through each test card and input the test card field
             for key, value in testCards.items():
-                # Input the test card
                 self.enterCardNumber(value)
-                # Read the generated card image
-                cardImage = self.driver.find_element_by_xpath('//*[@id="{}"]'.format("cardNumber")).get_attribute("style").split("/")[
+
+                # Read the generated card image from the field
+                cardImage = self.driver.find_element_by_xpath('//*[@id="{}"]'
+                                                              .format("cardNumber")).get_attribute("style").split("/")[
                     3].split(".")[0].upper()
-                # Compare the generated card image with the test data key
+
+                # Compare the generated input field image with the card name that was put in the field
                 if key in cardImage:
-                    logger.info("SUCCESS: Displayed {} card matches the test card.".format(key))
+                    logger.info("SUCCESS: Displayed card image matches the test {} card.".format(key))
                 else:
-                    logger.info("FAIL: Displayed {} card DOES NOT match the test cards.".format(key))
+                    logger.info("FAIL: Displayed card image DOES NOT match the test {} cards.".format(key))
                     chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
                                              filePrefix=self._testMethodName)
                     self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    # def test_03_noInputDataCC(self):
-    #     """
-    #     Validates if the Pay button is disabled when no input has been made for CC.
-    #     """
-    #     logger.info("Test case: %s" % self._testMethodName)
-    #     self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
-    #     # Wait for eePay widget too load
-    #     self.loadEEPayWidget()
-    #     # Input test data
-    #     self.enterFields(**testData[2])
-    #     # Check if the Pay button is disabled
-    #     self.driver.switch_to.default_content()
-    #     enabled = self.driver.find_element_by_id("submit-button").is_enabled()
-    #
-    #     if not enabled:
-    #         logger.info("SUCCESS: The Pay button has been disabled.")
-    #     else:
-    #         logger.info("FAIL: The Pay button has not been disabled.")
-    #         chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-    #         self.fail("Test case: %s failed, check logs" % self._testMethodName)
+    def test_03_currencyConversionValidation(self):
+        """
+        Validates if the test card input returns correct currency choices and conversions
+        """
+        logger.info("Test case: %s" % self._testMethodName)
+
+        # Load the eePay widget
+        self.loadEEPayWidget()
+
+        # Iterate through Form of Payment options, find the loaded cards and compare them to the test cards
+        for type in FOP:
+            self.selectFOP(type)
+            testCards = self.determineTestCards(type)
+            logger.info("TESTING {} CARDS:".format(type.upper()))
+
+            # Iterate through each test card and put it into the field to get the currency choices
+            for key, value in testCards.items():
+                self.enterCardNumber(value)
+
+                # Iterate through each available currency option and log them
+                if self.driver.find_elements_by_xpath('//*[@id="currency"]'):
+                    currencySelector = self.driver.find_elements_by_xpath('//*[@id="currency"]')[0]
+                    currencyOptions = currencySelector.find_elements_by_tag_name("option")
+                    for currency in currencyOptions:
+                        currency.click()
+                        price = self.driver.find_element_by_xpath('//*[@class="total-price"]')
+                        logger.info("Found {} currency option with price total:{}.".format(currency.text, price.text))
+                    currencySelector.find_elements_by_tag_name("option")[1].click()
+                    logger.info("Currency selector loaded for {}.".format(key))
+                else:
+                    logger.info("WARNING: Currency selector NOT loaded for {}.".format(key))
+
+                # TODO need to compare the currency resulsts with the JSON data or something else
+                # add currencies to the test script
+
+
+        #     if not enabled:
+        #         logger.info("SUCCESS: The Pay button has been disabled.")
+        #     else:
+        #         logger.info("FAIL: The Pay button has not been disabled.")
+        #         chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+        #         self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def tearDown(self):
         # If the driver is still active, close it.
