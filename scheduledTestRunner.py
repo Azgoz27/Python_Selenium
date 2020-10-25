@@ -1,5 +1,8 @@
 from unittest import TestLoader, TestSuite
 from HtmlTestRunner import HTMLTestRunner
+import glob
+import os
+from eeqcutils.htmlTestReportRunner import send_mail
 
 # Search Availability script imports
 from eeBookGEN.SearchAvailability.eeBookSearchAvailabilityCombinations_TestSuite import EEBKG_SA_PaxAndFltCombinations
@@ -72,10 +75,30 @@ suite = TestSuite([paxAndFlitCombinationsSuite,
                    eeBookAmadeusCompareSuite
                    ])
 
-runner = HTMLTestRunner(output="eeBookGEN_Reports",
+runner = HTMLTestRunner(output="reports",
                         combine_reports=True,
                         report_name="TestResults_eeBookGEN",
                         template="../eeqcutils/HTMLTestRunner_qba_test_report_template.html",
                         report_title="Test Results for eeBookGEN script")
 
 runner.run(suite)
+
+# Locate the generated report
+htmlFile = max(glob.iglob("../eeBookGEN/reports/*"), key=os.path.getctime)
+filesToSend = [htmlFile]
+try:
+    htmlContent = open(htmlFile, "r").read()
+except:
+    htmlContent = "HTML file not found"
+
+# Send the generated report
+emails = ["tomislav.stanceric@2e-systems.com", "davorin.gerovec@2e-systems.com", "sinisa.sambol@2e-systems.com"]
+send_mail(send_from="twoeqc@gmail.com",
+          send_to=emails,
+          username='twoeqc@gmail.com', password='shagme123',
+          subject=htmlFile,
+          text="Report GEN test Suite",
+          server='smtp.gmail.com:587',
+          htmlToShow=htmlContent,
+          files=filesToSend)
+
