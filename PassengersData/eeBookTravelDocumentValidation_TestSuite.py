@@ -116,50 +116,57 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         :param issuingCountry: Issuing country to select
         :param gender: Gender to select
         """
-        paxElem = "_%s-passenger-%s"
+        paxElem = "_%s-%s"
 
         # self.driver.execute_script("arguments[0].setAttribute('value', ' ')",
         # Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % documentTypeElem)).options[0])
 
         for paxNumber, passenger in enumerate(sp.paxType, start=1):
-            travelDocumentCheckbox = self.driver.find_element_by_xpath("//*[@for='travel_document{}']"
-                                                                       .format(paxElem % (passenger, paxNumber)))
+            if passenger == 'adult':
+                pax = 'adt'
+            elif passenger == 'junior':
+                pax = 'jun'
+            elif passenger == 'child':
+                pax = 'chd'
+            elif passenger == 'infant':
+                pax = 'inf'
+            travelDocumentCheckbox = self.driver.find_element_by_xpath("//*[@for='travel_document{}']".format(paxElem % (pax, paxNumber)))
             # temporary fix
             # if not travelDocumentCheckbox.is_selected():
             if not travelDocumentCheckbox.is_selected():
                 travelDocumentCheckbox.click()
 
             # Select nationality
-            nationalityElem = "nationality" + paxElem % (passenger, paxNumber)
+            nationalityElem = "nationality" + paxElem % (pax, paxNumber)
             Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % nationalityElem))\
                 .select_by_index(random.choice(nationality))
             travelDocumentElements[nationalityElem] = "id"
 
             # Select document type
-            documentTypeElem = "doc_type" + paxElem % (passenger, paxNumber)
+            documentTypeElem = "doc_type" + paxElem % (pax, paxNumber)
             Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % documentTypeElem))\
                 .select_by_index(random.choice(docType))
             travelDocumentElements[documentTypeElem] = "id"
 
             # Enter document number
-            documentNumberElem = "doc_number" + paxElem % (passenger, paxNumber)
+            documentNumberElem = "doc_number" + paxElem % (pax, paxNumber)
             self.driver.find_element_by_xpath('//*[@name="%s"]' % documentNumberElem).send_keys(docNumber)
 
             # Select expiration date
             for element, value in zip(["expirate_day", "expirate_month", "expirate_year"], expirationDate):
-                expirationDateElem = element + paxElem % (passenger, paxNumber)
+                expirationDateElem = element + paxElem % (pax, paxNumber)
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % expirationDateElem)).select_by_value(value)
                 travelDocumentElements[expirationDateElem] = "id"
 
             # Select issuing country
-            issuingCountryElem = "issuing_country" + paxElem % (passenger, paxNumber)
+            issuingCountryElem = "issuing_country" + paxElem % (pax, paxNumber)
             Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % issuingCountryElem))\
                 .select_by_index(random.choice(issuingCountry))
             travelDocumentElements[issuingCountryElem] = "id"
 
             if airline == "tcv":
                 # Select gender
-                genderElem = "gender" + paxElem % (passenger, paxNumber)
+                genderElem = "gender" + paxElem % (pax, paxNumber)
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % genderElem))\
                     .select_by_index(random.choice(gender))
                 travelDocumentElements[genderElem] = "id"

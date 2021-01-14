@@ -97,11 +97,19 @@ class EEBKG_PD_ValidateDropdowns(unittest.TestCase):
         :param phoneCode: Phone code to select
         :param fqtvProgram: FQTV program to select
         """
-        paxElem = "_%s-passenger-%s"
+        paxElem = "_%s-%s"
 
         for paxNumber, passenger in enumerate(sp.paxType, start=1):
+            if passenger == 'adult':
+                pax = 'adt'
+            elif passenger == 'junior':
+                pax = 'jun'
+            elif passenger == 'child':
+                pax = 'chd'
+            elif passenger == 'infant':
+                pax = 'inf'
             # Select title
-            titleElem = "title" + paxElem % (passenger, paxNumber)
+            titleElem = "title" + paxElem % (pax, paxNumber)
             if passenger == "adult":
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % titleElem)) \
                     .select_by_index(random.choice(title))
@@ -111,27 +119,27 @@ class EEBKG_PD_ValidateDropdowns(unittest.TestCase):
             dropdownElements[titleElem] = "id"
 
             # Select gender
-            genderElem = "gender" + paxElem % (passenger, paxNumber)
+            genderElem = "gender" + paxElem % (pax, paxNumber)
             Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % genderElem)) \
                 .select_by_index(random.choice(gender))
             dropdownElements[genderElem] = "id"
 
             if passenger == "adult":
                 # Select Phone code
-                phoneCodeElem = "phoneCode" + paxElem % (passenger, paxNumber)
+                phoneCodeElem = "phoneCode" + paxElem % (pax, paxNumber)
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % phoneCodeElem)) \
                     .select_by_index(random.choice(phoneCode))
                 dropdownElements[phoneCodeElem] = "id"
 
             if passenger != "infant" and sp.fqtv:
                 # Select FQTV program
-                fqtvProgramElem = "fqtv_program" + paxElem % (passenger, paxNumber)
+                fqtvProgramElem = "fqtv_program" + paxElem % (pax, paxNumber)
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % fqtvProgramElem)) \
                     .select_by_index(fqtvProgram)
                 dropdownElements[fqtvProgramElem] = "id"
 
                 # We must enter FQTV number to test FQTV selection
-                fqtvNumberElem = "fqtvNumber" + paxElem % (passenger, paxNumber)
+                fqtvNumberElem = "fqtvNumber" + paxElem % (pax, paxNumber)
                 try:
                     self.driver.find_element_by_xpath('//*[@name="%s"]' % fqtvNumberElem).send_keys(sp.getFQTVNo())
                 except:
@@ -212,7 +220,7 @@ class EEBKG_PD_ValidateDropdowns(unittest.TestCase):
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
-        checkPhoneCode = Select(self.driver.find_element_by_id("phoneCode_adult-passenger-1")).first_selected_option
+        checkPhoneCode = Select(self.driver.find_element_by_id("phoneCode_adt-1")).first_selected_option
         defaultPhoneCode = checkPhoneCode.get_attribute("value")
 
         if sp.defaultPhoneCode(airline) in defaultPhoneCode:

@@ -173,7 +173,15 @@ class EEBKG_PD_FOC_TestSuite(unittest.TestCase):
 
             # click on "Special assistance" button for every passenger
             for paxNumber, passenger in enumerate(currentCategory, start=1):
-                paxElem = "{}-passenger-{}".format(passenger, paxNumber)
+                if passenger == 'adult':
+                    pax = 'adt'
+                elif passenger == 'junior':
+                    pax = 'jun'
+                elif passenger == 'child':
+                    pax = 'chd'
+                elif passenger == 'infant':
+                    pax = 'inf'
+                paxElem = "{}-{}".format(pax, paxNumber)
                 time.sleep(2)
                 ssrButton = self.driver.find_element_by_xpath("//*[@for='specialNeeds_{}']".format(paxElem))
 

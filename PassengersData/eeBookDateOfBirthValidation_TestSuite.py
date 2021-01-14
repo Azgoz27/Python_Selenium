@@ -91,6 +91,7 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         :param endDOB: set True for ending invalid DOB, False for starting invalid DOB outside of valid DOB range
         """
         getLastFlightDate = self.driver.find_elements_by_class_name("basket-flight__departure")
+        time.sleep(0.5)
         lastFlight = parse(getLastFlightDate[-1].text)
 
         if airline == "bwa":
@@ -123,11 +124,19 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         """
         Selects dates of birth from dropdown menus.
         """
-        paxElem = "%s_%s-passenger-%s"
+        paxElem = "%s_%s-%s"
 
         for paxNumber, passenger in enumerate(list(passengerDOB.keys()), start=1):
             for index, dmy in enumerate(["day", "month", "year"]):
-                dobElement = paxElem % (dmy, passenger, paxNumber)
+                if passenger == 'adult':
+                    pax = 'adt'
+                elif passenger == 'junior':
+                    pax = 'jun'
+                elif passenger == 'child':
+                    pax = 'chd'
+                elif passenger == 'infant':
+                    pax = 'inf'
+                dobElement = paxElem % (dmy, pax, paxNumber)
                 Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % dobElement)) \
                     .select_by_value(passengerDOB[passenger][index])
                 dobDropdownElements[dobElement] = "id"

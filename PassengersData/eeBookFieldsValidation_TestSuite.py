@@ -136,37 +136,45 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
         :param email: string - email to enter
         :param fqtvNumber: string - FQTV number to enter
         """
-        paxElem = "_%s-passenger-%s"
+        paxElem = "_%s-%s"
 
         for paxNumber, passenger in enumerate(sp.paxType, start=1):
+            if passenger == 'adult':
+                pax = 'adt'
+            elif passenger == 'junior':
+                pax = 'jun'
+            elif passenger == 'child':
+                pax = 'chd'
+            elif passenger == 'infant':
+                pax = 'inf'
             # Enter first name
-            firstNameElem = "firstName" + paxElem % (passenger, paxNumber)
+            firstNameElem = "firstName" + paxElem % (pax, paxNumber)
             self.driver.find_element_by_xpath('//*[@id="%s"]' % firstNameElem).send_keys(firstName)
             passengerElements[firstNameElem] = "id"
 
             # Enter last name
-            lastNameElem = "lastName" + paxElem % (passenger, paxNumber)
+            lastNameElem = "lastName" + paxElem % (pax, paxNumber)
             self.driver.find_element_by_xpath('//*[@id="%s"]' % lastNameElem).send_keys(lastName)
             passengerElements[lastNameElem] = "id"
 
             if passenger == "adult":
                 # Enter phone number
-                phoneNumberElem = "phoneNumber" + paxElem % (passenger, paxNumber)
+                phoneNumberElem = "phoneNumber" + paxElem % (pax, paxNumber)
                 self.driver.find_element_by_xpath('//*[@id="%s"]' % phoneNumberElem).send_keys(phoneNumber)
                 passengerElements[phoneNumberElem] = "id"
 
                 # Enter email
-                emailElem = "email" + paxElem % (passenger, paxNumber)
+                emailElem = "email" + paxElem % (pax, paxNumber)
                 self.driver.find_element_by_xpath('//*[@id="%s"]' % emailElem).send_keys(email)
                 passengerElements[emailElem] = "id"
 
             if passenger != "infant" and sp.fqtv:
                 # We must select FQTV to test input
-                Select(self.driver.find_element_by_id("fqtv_program" + paxElem % (passenger, paxNumber))) \
+                Select(self.driver.find_element_by_id("fqtv_program" + paxElem % (pax, paxNumber))) \
                     .select_by_index("1")
 
                 # Enter FQTV number
-                fqtvNumberElem = "fqtvNumber" + paxElem % (passenger, paxNumber)
+                fqtvNumberElem = "fqtvNumber" + paxElem % (pax, paxNumber)
                 #self.driver.find_element_by_xpath('//*[@name="%s"]' % fqtvNumberElem).send_keys(fqtvNumber)
                 time.sleep(0.5)
                 self.driver.find_element_by_name(fqtvNumberElem).send_keys(fqtvNumber)
