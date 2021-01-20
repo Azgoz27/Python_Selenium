@@ -60,3 +60,5 @@ class EEBKG_GEN_eeBookToAmadeusCompareTests(unittest.TestCase):
                             logger.critical("FAIL: Differences found for PNR {}:".format(test[0].PNR))
                             logger.critical(difference)
                             self.fail(difference)
+
+                            # TODO: fix bwa conf screen -> fix createdPNR files -> test this script

@@ -18,6 +18,8 @@ from eeqcutils.genericMetaTestClass import GenericMetaTestClass
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils import eeBookJson
+import json
 
 cfg = configurator.Configurator()
 baseURL = cfg.URL
@@ -101,7 +103,30 @@ class EEBKG_SA_PaxAndFltCombinations(unittest.TestCase, metaclass=GenericMetaTes
         logger.info("Session ID: %s" % self.sessionId)
         self.eebkgMain.waitForSplashScreenToDissapear(self.driver)
 
-        waitForPageToLoad(self.driver, selector="availability", how=By.CLASS_NAME, timeoutSeconds=5, errorSelector="alert-danger")
+        try:
+            waitForPageToLoad(self.driver, selector="availability", how=By.CLASS_NAME, timeoutSeconds=5, errorSelector="alert-danger")
+        except:
+            # If the case doesn't load, collect the error message and fail the case
+            response = eeBookJson.requestJsonAvail(client=cfg.airline,
+                                                   system=cfg.environment,
+                                                   routeType=case.type,
+                                                   outboundDate=case.outboundDate,
+                                                   inboundDate=case.inboundDate,
+                                                   origin=case.origin,
+                                                   destination=case.destination,
+                                                   adult=case.adult,
+                                                   child=case.child,
+                                                   infant=case.infant,
+                                                   junior=case.junior)
+
+            responseParsed = json.loads(response._content)
+            # Collect error code
+            errorCode = responseParsed["errors"]["error"][0]["code"]
+            # Compare the error codes
+            self.fail("Error code found: %s" % errorCode)
+
+
+
 
         # Set the header to be static!
         element = self.driver.find_element_by_id("twoe-header")

@@ -235,10 +235,10 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
 
                         try:
                             summaryCheckedBaggage = str(summaryInboundServicesList[1].text)
-                            if "Checked baggage" in summaryCabinBaggage:
+                            if "Checked baggage" in summaryCheckedBaggage:
                                 summaryCheckedBaggage = summaryCheckedBaggage.split(" ")
                                 del summaryCheckedBaggage[1:5]
-                                outboundServicesList.append(summaryCheckedBaggage)
+                                inboundServicesList.append(summaryCheckedBaggage)
                             elif "Checked baggage" not in summaryCheckedBaggage:
                                 inboundServicesList.append(["No"])
                         except:

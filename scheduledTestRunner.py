@@ -92,7 +92,7 @@ except:
     htmlContent = "HTML file not found"
 
 # Send the generated report
-emails = ["tomislav.stanceric@2e-systems.com", "davorin.gerovec@2e-systems.com", "sinisa.sambol@2e-systems.com"]
+emails = ["tomislav.stanceric@2e-systems.com", "davorin.gerovac@2e-systems.com", "sinisa.sambol@2e-systems.com"]
 send_mail(send_from="twoeqc@gmail.com",
           send_to=emails,
           username='twoeqc@gmail.com', password='shagme123',
