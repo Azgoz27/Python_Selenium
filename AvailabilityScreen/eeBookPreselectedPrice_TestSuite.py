@@ -58,7 +58,7 @@ class EEBKG_AV_PreselectedPrice(unittest.TestCase):
         # Find all offered compartment prices for all outbound or inbound flights
         prices = []
         try:
-            flight = self.driver.find_element_by_id(direction)
+            flight = self.driver.find_element_by_id(direction[0])
             flightDirection = flight.find_element_by_class_name("availability__flights-list")
             offer = flightDirection.find_elements_by_class_name("amount")
         except:

@@ -69,7 +69,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
     def checkCalendarPrices(self, flightDirection, dateDirection, calendarDirection):
         # Open the outbound/inbound calendar in the past or next week
         try:
-            self.readCalendar(flightDirection)[dateDirection].click()
+            self.readCalendar(flightDirection[0])[dateDirection].click()
             sp.useClass(self.driver, cfg).waitForSplashScreenToDissapear(self.driver)
         except:
             logger.info("FAIL: Couldn't open {} calendar in the past or next week.".format(flightDirection))
@@ -79,7 +79,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
         savedPrice = None
 
         # Find valid flight dates in the calendar and add them to the list
-        calendarDates = self.readCalendar(flightDirection)
+        calendarDates = self.readCalendar(flightDirection[0])
         validCalendarDates = []
         for calendarDate in calendarDates:
             if "disabled" not in calendarDate.get_attribute("class"):
@@ -89,7 +89,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
         # Open each of the found valid dates
         for validCalendarDate in validCalendarDates:
             # Each time we open a calendar date we have to read the calendar again to avoid stale elements
-            flightDates = self.readCalendar(flightDirection)
+            flightDates = self.readCalendar(flightDirection[0])
             for flightDate in flightDates:
                 # There are valid dates hidden under the left and right calendar arrows and are displayed without the currency
                 if validCalendarDate == flightDate.text or validCalendarDate == flightDate.text[:-4]:
@@ -102,7 +102,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
 
                     # Find all the prices for selected date and sort them to get the lowest price in the list
                     flightPriceList = []
-                    flightList = self.driver.find_element_by_id(flightDirection)
+                    flightList = self.driver.find_element_by_id(flightDirection[0])
                     pricesList = flightList.find_element_by_class_name("availability__flights-list")
                     flightOffer = pricesList.find_elements_by_class_name("amount")
                     for amount in flightOffer:

@@ -61,7 +61,7 @@ class EEBKG_AV_FlightDetailsModal(unittest.TestCase):
         :param direction: String - outbound or inbound
         :return:
         """
-        if direction == "outbound":
+        if direction[0] == "o":
             try:
                 flights = self.driver.find_elements_by_class_name("basket-flight")[0]
             except:
@@ -81,6 +81,7 @@ class EEBKG_AV_FlightDetailsModal(unittest.TestCase):
                 self.failSubTest()
 
             # Close the modal if it's not empty
+            # TODO:
             # Sinisa: Verify here if the modal contains flightNumber. It's going to be a more precise check than
             # only checking if any text appeared.
             if not self.driver.find_element_by_class_name("flight-details-modal").text:

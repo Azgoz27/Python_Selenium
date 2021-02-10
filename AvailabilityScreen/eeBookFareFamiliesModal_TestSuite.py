@@ -63,7 +63,7 @@ class EEBKG_AV_FareFamiliesModal(unittest.TestCase):
         """
         try:
             logger.info("Checking {} fare families modal...".format(direction))
-            fareFamiliesModalOutbound = self.driver.find_element_by_id(direction)
+            fareFamiliesModalOutbound = self.driver.find_element_by_id(direction[0])
             fareFamiliesModalOutbound.find_element_by_class_name("journey-sort-options__fare-rules").click()
             time.sleep(2)
         except:

@@ -134,13 +134,13 @@ class EEBKG_SA_PaxAndFltCombinations(unittest.TestCase, metaclass=GenericMetaTes
 
         logger.info("Checking if flights offered on outbound...")
         fare = self.driver.find_element_by_xpath(
-            "//section[@id='outbound']//label[contains(@class, 'price-item') and contains(@class, 'active')]//span[@class='amount']").text
+            "//section[@id='o']//label[contains(@class, 'price-item') and contains(@class, 'active')]//span[@class='amount']").text
         logger.info("Preselected fare on outbound: %s" % fare)
 
         if case.type != "OW":
             logger.info("Checking if flights offered on inbound...")
             fare = self.driver.find_element_by_xpath(
-                "//section[@id='inbound']//label[contains(@class, 'price-item') and contains(@class, 'active')]//span[@class='amount']").text
+                "//section[@id='i']//label[contains(@class, 'price-item') and contains(@class, 'active')]//span[@class='amount']").text
             logger.info("Preselected fare on inbound: %s" % fare)
 
         paxScreen = {}

@@ -65,7 +65,7 @@ class EEBKG_AV_FareRulesModal(unittest.TestCase):
         fareRulesModal = self.driver.find_elements_by_class_name("basket-flight__compartment")
         time.sleep(1)
         # Open Fare rules modal for outbound flights
-        if direction == "outbound":
+        if direction[0] == "o":
             try:
                 logger.info("Checking for {} fare rules modal...".format(direction))
                 fareRulesModal[0].find_element_by_class_name("btn-link").click()
@@ -73,7 +73,7 @@ class EEBKG_AV_FareRulesModal(unittest.TestCase):
             except:
                 logger.info("FAIL: {} fare rules modal not found!!!".format(direction))
                 self.failSubTest()
-        elif direction == "inbound":
+        elif direction[0] == "i":
             try:
                 logger.info("Checking for {} fare rules modal...".format(direction))
                 fareRulesModal[1].find_element_by_class_name("btn-link").click()
