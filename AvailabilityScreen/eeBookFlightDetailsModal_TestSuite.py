@@ -71,10 +71,12 @@ class EEBKG_AV_FlightDetailsModal(unittest.TestCase):
         flight = flights.find_elements_by_class_name("basket-leg__number")
 
         for flightNumber in flight:
-            # Open Flight Details modal for inbound flights
+            # Read the Flight Number and open the Flight Details modal
             try:
                 logger.info("Checking for {} flight details modal...".format(direction))
-                flightNumber.find_element_by_class_name("flightNumber").click()
+                number = flightNumber.find_element_by_class_name("flightNumber")
+                flightNumberClicked = number.text
+                number.click()
                 time.sleep(2)
             except:
                 logger.info("FAIL: {} flight details modal not found!!!".format(direction))
@@ -88,6 +90,27 @@ class EEBKG_AV_FlightDetailsModal(unittest.TestCase):
                 logger.info("FAIL: {} flight details modal is empty!!!".format(direction))
                 self.failSubTest()
             else:
+                # Check if correct Flight Number is present
+                try:
+                    flightNumberShown = self.driver.find_elements_by_xpath("//div[@class='modal-content']//div[@class='flight-details-modal']//div[@class='col content']/span/span[@class='code']/..")
+                    time.sleep(1)
+                    flightNumbersFound = []
+                    for number in flightNumberShown:
+                        flightNumbersFound.append(number.text)
+                        logger.info("{} Flight Number {} is successfully found in the modal!".format(direction, number.text))
+                    time.sleep(2)
+                except:
+                    logger.info("FAIL: {} Flight Number not found!!!".format(direction))
+                    self.failSubTest()
+                # Compare the Flight Number clicked and the modal Flight Number
+                if flightNumberClicked in flightNumbersFound:
+                    logger.info("SUCCESS: {} Flight Number {} is opened and is found in the modal!".format(direction, flightNumberClicked))
+                else:
+                    logger.info(
+                        "SUCCESS: {} Flight Number opened and Flight Number shown in the modal are NOT a match!".format(
+                            direction))
+                    self.failSubTest()
+                # Close the modal
                 self.driver.find_element_by_xpath(
                     "//div[@class='modal-content']//button[contains(@class, 'close')]").click()
                 logger.info("SUCCESS: {} flight details modal successfully checked!".format(direction))

@@ -58,7 +58,7 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
     def readCalendar(self, direction):
         # Read the calendar dates with flights and prices
         try:
-            flightDirection = self.driver.find_element_by_id(direction)
+            flightDirection = self.driver.find_element_by_id(direction[0])
             flightCalendar = flightDirection.find_elements_by_class_name("price-tab-item")
             sp.useClass(self.driver, cfg).waitForSplashScreenToDissapear(self.driver)
             return flightCalendar
@@ -148,8 +148,6 @@ class EEBKG_AV_CalendarDatesAndPrices(unittest.TestCase):
         """
         # setup the client to clear cache by route
         if airline == "bwa":
-            # TODO
-            #### Sinisa: this does not work with "import suds", you have to import it in a different way
             client = suds.client.Client(url="http://bwaint:30010/eebkgbe_support?wsdl")
         elif airline == "tcv":
             client = suds.client.Client(url="http://tcvint:30010/eebkgbe_support?wsdl")

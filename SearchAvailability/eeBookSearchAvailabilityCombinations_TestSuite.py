@@ -118,11 +118,13 @@ class EEBKG_SA_PaxAndFltCombinations(unittest.TestCase, metaclass=GenericMetaTes
                                                    child=case.child,
                                                    infant=case.infant,
                                                    junior=case.junior)
-
+            # Check response code
+            logger.info("Response code found: %s" % response)
             responseParsed = json.loads(response._content)
             # Collect error code
             errorCode = responseParsed["errors"]["error"][0]["code"]
-            # Compare the error codes
+            logger.info("Error code found: %s" % errorCode)
+            # Set Fail with the error codes
             self.fail("Error code found: %s" % errorCode)
 
 
