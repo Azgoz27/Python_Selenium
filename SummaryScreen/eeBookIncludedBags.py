@@ -193,56 +193,76 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                     summaryServicesList = pax.find_element_by_class_name("col-md-7")
                     servicesList = summaryServicesList.find_elements_by_class_name("services")
 
-                    # Read baggages for outbound flights
+                    # Read cabin and checked baggage for outbound flights
                     summaryOutboundServicesList = servicesList[0].find_elements_by_class_name("passenger-service-item")
                     outboundServicesList = []
+
+                    # Read cabin baggage
+                    summaryCabinBaggageShown = False
                     try:
                         summaryCabinBaggage = str(summaryOutboundServicesList[0].text)
+                        summaryCabinBaggageShown = True
+                    except:
+                        outboundServicesList.append("No")
+                    if summaryCabinBaggageShown:
                         if "Cabin baggage" in summaryCabinBaggage:
                             summaryCabinBaggage = summaryCabinBaggage.split(" ")
                             del summaryCabinBaggage[1:5]
                             outboundServicesList.append(summaryCabinBaggage)
-                        elif "Cabin baggage" not in summaryCabinBaggage:
+                        else:
                             outboundServicesList.append("No")
-                    except:
-                        outboundServicesList.append("No")
 
+                    # Read checked baggage
+                    summaryCheckedBaggageShown = False
                     try:
                         summaryCheckedBaggage = str(summaryOutboundServicesList[1].text)
+                        summaryCheckedBaggageShown = True
+                    except:
+                        outboundServicesList.append(["No"])
+                    if summaryCheckedBaggageShown:
                         if "Checked baggage" in summaryCheckedBaggage:
                             summaryCheckedBaggage = summaryCheckedBaggage.split(" ")
                             del summaryCheckedBaggage[1:5]
                             outboundServicesList.append(summaryCheckedBaggage)
-                        elif "Checked baggage" not in summaryCheckedBaggage:
+                        else:
                             outboundServicesList.append(["No"])
-                    except:
-                        outboundServicesList.append(["No"])
 
-                    # Read baggages for inbound flights
+
+
+                    # Read cabin and checked baggage for inbound flights
                     if test.type == "RT":
                         summaryInboundServicesList = servicesList[1].find_elements_by_class_name("passenger-service-item")
                         inboundServicesList = []
+
+                        # Read cabin baggage
+                        summaryCabinBaggageShown = False
                         try:
                             summaryCabinBaggage = str(summaryInboundServicesList[0].text)
+                            summaryCabinBaggageShown = True
+                        except:
+                            inboundServicesList.append(["No"])
+                        if summaryCabinBaggageShown:
                             if "Cabin baggage" in summaryCabinBaggage:
                                 summaryCabinBaggage = summaryCabinBaggage.split(" ")
                                 del summaryCabinBaggage[1:5]
                                 inboundServicesList.append(summaryCabinBaggage)
-                            elif "Cabin baggage" not in summaryCabinBaggage:
+                            else:
                                 inboundServicesList.append(["No"])
-                        except:
-                            inboundServicesList.append(["No"])
 
+                        # Read checked baggage
+                        summaryCheckedBaggageShown = False
                         try:
                             summaryCheckedBaggage = str(summaryInboundServicesList[1].text)
+                            summaryCheckedBaggageShown = True
+                        except:
+                            inboundServicesList.append(["No"])
+                        if summaryCheckedBaggageShown:
                             if "Checked baggage" in summaryCheckedBaggage:
                                 summaryCheckedBaggage = summaryCheckedBaggage.split(" ")
                                 del summaryCheckedBaggage[1:5]
                                 inboundServicesList.append(summaryCheckedBaggage)
-                            elif "Checked baggage" not in summaryCheckedBaggage:
+                            else:
                                 inboundServicesList.append(["No"])
-                        except:
-                            inboundServicesList.append(["No"])
 
                     # Read the Summary Screen Ticket Type names
                     summaryTicketTypes = self.driver.find_element_by_class_name("flights-wrap")
@@ -261,20 +281,43 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                     # Compare the baggage from the Availability screen with the baggage listed on the Summary Screen
                     logger.info(
                         "Checking if the included baggage on the Availability and Summary screen are a match...")
-                    if outboundSelectedBaggage == outboundBaggageList:
+                    # First check the infant special rule
+                    if ((pax.text).split("\n")[1]).upper() == "INFANT":
+                        if outboundSelectedBaggage[1][0] == outboundBaggageList[1][0]:
+                            logger.info(
+                                "SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
+                        else:
+                            logger.info(
+                                "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
+                            self.failSubTest()
+
+                    elif outboundSelectedBaggage == outboundBaggageList:
                         logger.info("SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
                     else:
-                        self.failSubTest()
-                    if test.type == "RT":
                         logger.info(
-                            "Checking if the included baggage on the Availability and Summary screen are a match...")
+                            "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
+                        self.failSubTest()
+
+                    if test.type == "RT":
+                        # First check the infant special rule
+                        if ((pax.text).split("\n")[1]).upper() == "INFANT":
+                            if inboundSelectedBaggage[1][0] == inboundBaggageList[1][0]:
+                                logger.info(
+                                    "SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
+                            else:
+                                logger.info(
+                                    "FAIL: Included Inbound Baggage on the Availability and Summary screen are NOT the same!")
+                                self.failSubTest()
+                        logger.info(
+                            "Checking if the included Inbound baggage on the Availability and Summary screen are a match...")
                         if inboundSelectedBaggage == inboundBaggageList:
                             logger.info("SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
                         else:
+                            logger.info(
+                                "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
                             self.failSubTest()
 
-                # TODO
-                # better implement try except
+
 
 
     def skipUpsellScreen(self):

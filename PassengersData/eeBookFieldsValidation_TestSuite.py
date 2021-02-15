@@ -45,20 +45,16 @@ testData = [  # Valid input field data
              "lastName": "McTesterson",
              "phoneNumber": "093117666",
              "email": "tester.mctesterson@email.com",
-             # TODO
-             # sp.getFQTVNo() method returns wrong data, needs to be checked
-             #"fqtvNumber": sp.getFQTVNo()},
-             "fqtvNumber": "0123456789"},
+             "fqtvNumber": sp.getFQTVNo()},
+
 
             # Invalid input field data
             {"firstName": randomString,
              "lastName": randomString,
              "phoneNumber": "123ABC",
              "email": "noemail.com",
-            # TODO
-            # sp.getFQTVNo() method returns wrong data, needs to be checked
-             #"fqtvNumber": sp.getFQTVNo() + "A"},
-             "fqtvNumber": "0123456789A"},
+             "fqtvNumber": sp.getFQTVNo() + "A"},
+
 
             # No input field data
             {"firstName": "",
@@ -175,7 +171,6 @@ class EEBKG_PD_ValidateFields(unittest.TestCase):
 
                 # Enter FQTV number
                 fqtvNumberElem = "fqtvNumber" + paxElem % (pax, paxNumber)
-                #self.driver.find_element_by_xpath('//*[@name="%s"]' % fqtvNumberElem).send_keys(fqtvNumber)
                 time.sleep(0.5)
                 self.driver.find_element_by_name(fqtvNumberElem).send_keys(fqtvNumber)
                 passengerElements[fqtvNumberElem] = "name"

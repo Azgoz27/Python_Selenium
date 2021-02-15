@@ -95,7 +95,7 @@ class ScriptParameters(object):
         :return: unicode - random fqtv number
         """
         getFQTVProgram = requests.get("http://bwaint:30580/catalog/fqtv_simple").json()
-        fqtvFormat = getFQTVProgram['content'][0]['memberIdFormat']
+        fqtvFormat = getFQTVProgram['content'][1]['memberIdFormat']
         randomFQTVNumber = Xeger(limit=10).xeger(fqtvFormat)
         return randomFQTVNumber
 

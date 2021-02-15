@@ -21,9 +21,9 @@ initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBook_to_Amadeus_Comparison_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 
-# PNRs for testing will be collected from the latest created PNR file or supply a path manually
+# PNRs for testing will be collected from the latest created PNR file or you can supply a path manually
 PNRpath = ("../eeBook{}/createdPNRs/*".format((cfg.airline).upper()))
-fileOfJsonStrings = min(glob.iglob(PNRpath), key=os.path.getctime)
+fileOfJsonStrings = max(glob.iglob(PNRpath), key=os.path.getctime)
 #fileOfJsonStrings = "../eeBookBWA/createdPNRs/created_PNRs_16.10.2020_07_00_01.txt"
 
 # airline specific parameters:
@@ -60,5 +60,3 @@ class EEBKG_GEN_eeBookToAmadeusCompareTests(unittest.TestCase):
                             logger.critical("FAIL: Differences found for PNR {}:".format(test[0].PNR))
                             logger.critical(difference)
                             self.fail(difference)
-
-                            # TODO: fix bwa conf screen -> fix createdPNR files -> test this script

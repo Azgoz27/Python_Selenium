@@ -146,11 +146,8 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 time.sleep(2)
 
                 # Check if the basket is visible
-                # TODO
-                #Not a good approach, need to find a different way to test this for BWA
                 if airline == "bwa":
                     try:
-                        #self.driver.find_element_by_class_name("basket-xs").is_displayed()
                         self.driver.find_element_by_class_name("basket-xs").click()
                         logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
                         self.failSubTest()
