@@ -8,27 +8,29 @@ import sys, os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 import random
 from collections import OrderedDict
 from datetimerange import DateTimeRange as timeRange
 from datetime import date, timedelta, datetime
 from dateutil.parser import parse
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+# cfg = configurator.Configurator()
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookDateOfBirthValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookDateOfBirthValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookDateOfBirthValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
+
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -43,23 +45,22 @@ passengerDOB = {}
 passengerDOB = OrderedDict(passengerDOB)
 
 
-class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
+class EEBKG_PD_ValidateDOBDropdowns(TestFixturesUIBaseClass):
     """
     Used for running eeBook Passenger screen date of birth dropdown test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_PD_ValidateDOBDropdowns, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookDateOfBirthValidation_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def enterFlightDetailsAndGoToPaxScreen(self):
         """
         Enters flight details and goes to Passenger screen.
         """
         sp.useClass(self.driver, cfg) \
-            .enterTestcase(self.driver, cfg.URL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
+            .enterTestcase(self.driver, baseURL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
                            1, 1, 1, "", "", "", "", sp.appID if airline == "bwa" else sp.fakeIP)
 
         waitForSplashScreenToDissapear(self.driver)
@@ -163,7 +164,7 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         """
         Validates no error messages are shown when valid dropdown date of birth values are selected.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -176,10 +177,10 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         found = self.findErrorElements(dobDropdownElements)
 
         if not found:
-            logger.info("SUCCESS: No errors were found")
+            self.logger.info("SUCCESS: No errors were found")
         else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_02_invalidEndingDOBValues(self):
@@ -187,7 +188,7 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         Validates error messages are shown when invalid ending DOB dropdown values are selected
         (outside of valid ending range).
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
@@ -198,11 +199,11 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         found = self.findErrorElements(dobDropdownElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_03_invalidStartingDOBValues(self):
@@ -210,7 +211,7 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         Validates error messages are shown when invalid starting DOB dropdown values are selected
         (outside of valid starting range - only for child and infant passengers).
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
@@ -221,16 +222,16 @@ class EEBKG_PD_ValidateDOBDropdowns(unittest.TestCase):
         found = self.findErrorElements(dobDropdownElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

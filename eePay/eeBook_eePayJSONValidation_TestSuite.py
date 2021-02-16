@@ -9,8 +9,8 @@ import sys
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# import unittest2 as unittest
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
@@ -19,15 +19,16 @@ from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 import json
 import requests
 from selenium.webdriver.common.keys import Keys
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
 cfg = configurator.Configurator()
 baseURL = "http://qba.2e-systems.com:7200/qcpay/"
+airline = cfg.airline
 headers = {"Content-Type": "application/json"}
 initlog.removeOldFile("eeBook_eePayJSONValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBook_eePayJSONValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 with open("./eePay/testData_eePayJSONValidation") as json_file:
@@ -50,16 +51,15 @@ testCardsDebit = {
     "VINTI4": "6034450006000115"
     }
 
-class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
+class EEBKG_EEPAY_ValidateJSON(TestFixturesUIBaseClass):
     """
     Used for running eePay widget screen JSON validation test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_EEPAY_ValidateJSON, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBook_eePayJSONValidation_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def loadEEPayWidget(self):
         """
@@ -76,7 +76,7 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
         """
         Selects the Form of Payment from eePay widget drop down menu.
         """
-        self.driver.find_element_by_xpath('//*[@class="{}"]'.format("payment-dropdown")).click()
+        self.driver.find_element_by_tag_name("button").click()
         self.driver.find_element_by_xpath('//*[@data-value="{}"]'.format(FOP)).click()
 
     def checkAvailableCards(self):
@@ -141,7 +141,7 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
                 logger.info("SUCCESS: Displayed {} cards match the test cards.".format(type))
             else:
                 logger.info("FAIL: Displayed {} cards DO NOT match the test cards.".format(type))
-                chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
+                self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
                                          filePrefix=self._testMethodName)
                 self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -174,7 +174,7 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
                     logger.info("SUCCESS: Displayed card image matches the test {} card.".format(key))
                 else:
                     logger.info("FAIL: Displayed card image DOES NOT match the test {} cards.".format(key))
-                    chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
+                    self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
                                              filePrefix=self._testMethodName)
                     self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -221,9 +221,9 @@ class EEBKG_EEPAY_ValidateJSON(unittest.TestCase):
         #         chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
         #         self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

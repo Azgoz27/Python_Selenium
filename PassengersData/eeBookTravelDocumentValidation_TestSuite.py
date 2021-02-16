@@ -6,30 +6,30 @@ Contains test cases for eeBook's Passenger Data dropdown menu validation on pass
 # eeBookGEN root folder and not the folder where this script actually is...
 import os
 import sys
-
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 import random
 import string
 from datetime import date, timedelta, datetime
 from dateutil.parser import parse
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+# cfg = configurator.Configurator()
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookTravelDocumentValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookTravelDocumentValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookTravelDocumentValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -64,24 +64,22 @@ testData = [  # Valid travel doc info
              "gender": [0, 0]}
 ]
 
-
-class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
+class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
     """
     Used for running eeBook Passenger screen travel document test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_PD_ValidateTravelDocument, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookTravelDocumentValidation_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def enterFlightDetailsAndGoToPaxScreen(self):
         """
         Enters flight details and goes to Passenger screen.
         """
         sp.useClass(self.driver, cfg) \
-            .enterTestcase(self.driver, cfg.URL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
+            .enterTestcase(self.driver, baseURL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
                            1, 1, 1, "", "", "", "", sp.appID if airline == "bwa" else sp.fakeIP)
 
         waitForSplashScreenToDissapear(self.driver)
@@ -194,7 +192,7 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         """
         Validates error messages are not shown when valid values are selected or entered.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -206,17 +204,17 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         found = self.findErrorElements(travelDocumentElements)
 
         if not found:
-            logger.info("SUCCESS: No errors were found")
+            self.logger.info("SUCCESS: No errors were found")
         else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_02_invalidTravelDocumentValues_01(self):
         """
         Validates error messages are shown when invalid values are selected or entered.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
@@ -226,11 +224,11 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         found = self.findErrorElements(travelDocumentElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_03_invalidTravelDocumentValues_02(self):
@@ -238,7 +236,7 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         Validates error messages are shown when invalid values are selected or entered.
         This one checks if errors are shown if doc expiration date is before last flight date.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
@@ -253,16 +251,16 @@ class EEBKG_PD_ValidateTravelDocument(unittest.TestCase):
         found = self.findErrorElements(travelDocumentElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

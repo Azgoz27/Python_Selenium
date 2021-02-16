@@ -9,25 +9,26 @@ import sys
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 import random
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+import json
+import requests
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
-import json
-import requests
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
 cfg = configurator.Configurator()
+airline = cfg.airline
 baseURL = "http://qba.2e-systems.com:7200/qcpay/"
 headers = {"Content-Type": "application/json"}
 initlog.removeOldFile("eeBook_eePayFieldsValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBook_eePayFieldsValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 with open("./eePay/testData_eePayFieldsValidation") as json_file:
@@ -121,16 +122,15 @@ testData = [  # Valid input field data for CC
              }
 ]
 
-class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
+class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
     """
     Used for running eePay widget screen input field test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_EEPAY_ValidateFields, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBook_eePayFieldsValidation_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def loadEEPayWidget(self):
         """
@@ -212,13 +212,11 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         # Select Country
         country = [i for i in range(1, sp.numberOfCountries(airline))]
         Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("countryCode"))).select_by_index(random.choice(country))
-        # eePayElements["countryCode"] = "id"
 
         if cfg.airline == "bwa":
             # Select Country Phone Number
             countryPhone = [i for i in range(1, sp.numberOfCountries(airline))]
             Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("phoneCode"))).select_by_index(random.choice(countryPhone))
-            # eePayElements["phoneCode"] = "id"
 
         # Switch back from the iFrame to default
         # self.driver.switch_to.default_content()
@@ -262,7 +260,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
             logger.info("SUCCESS: No errors were found")
         else:
             logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_02_invalidMaxCharInputDataCC(self):
@@ -284,7 +282,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         else:
             logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_03_noInputDataCC(self):
@@ -304,7 +302,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
             logger.info("SUCCESS: The Pay button has been disabled.")
         else:
             logger.info("FAIL: The Pay button has not been disabled.")
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_04_invalidCharacterInputDataCC(self):
@@ -326,7 +324,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         else:
             logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_05_validInputDataDC(self):
@@ -347,7 +345,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
             logger.info("SUCCESS: No errors were found")
         else:
             logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_06_invalidMaxCharInputDataDC(self):
@@ -371,7 +369,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         else:
             logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_07_noInputDataDC(self):
@@ -393,7 +391,7 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
             logger.info("SUCCESS: The Pay button has been disabled.")
         else:
             logger.info("FAIL: The Pay button has not been disabled.")
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
     def test_08_invalidCharacterInputDataDC(self):
@@ -417,12 +415,12 @@ class EEBKG_EEPAY_ValidateFields(unittest.TestCase):
         else:
             logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

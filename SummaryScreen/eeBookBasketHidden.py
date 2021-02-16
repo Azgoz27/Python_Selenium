@@ -8,53 +8,37 @@ import os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+# cfg = configurator.Configurator()
 testData = UniversalCaseReader.getCasesFromFile("./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
+filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookBasketHidden_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookBasketHidden_TestSuite_%s" % cfg.gridHost).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookBasketHidden_TestSuite_%s" % cfg.gridHost).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
-class EEBKG_SS_BasketHidden(unittest.TestCase):
+class EEBKG_SS_BasketHidden(TestFixturesUIBaseClass):
     """
     Used for running eeBook Hidden Basket test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
-
-    def failSubTest(self, failureMsg=None):
-        """
-        Called when a sub-test fails to take a screenshot and log additional messages if needed.
-        :param failureMsg: String - if set it will be logged as part of unittest fail() method.
-        :return:
-        """
-        try:
-            failureMsg = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-            logger.info("WARNING: Test case not loaded, error message found: {}".format(failureMsg))
-        except:
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/")
-
-        self.fail(failureMsg)
-
-    def setUp(self):
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
+    def __init__(self, tcNumber):
+        super(EEBKG_SS_BasketHidden, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookBasketHidden_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def test_checkIfBasketIsHidden(self):
         """
@@ -64,7 +48,7 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
             with self.subTest(case=test):
                 # Set the test case number parameter which is then used for later logging/screenshots
                 self.tcNumber = test.TCNumber
-                logger.info("Running case: {}".format(test.TCNumber))
+                self.logger.info("Running case: {}".format(test.TCNumber))
                 # Build deeplink and loop through each test case
                 sp.useClass(self.driver, cfg).enterTestcase(self.driver,
                                                             baseURL,
@@ -89,15 +73,15 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 # Proceed to the Pax screen
                 if airline == "bwa":
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
-                        logger.info("Availability Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Availability Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
-                        logger.info("Availability Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Availability Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Availability Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 self.driver.find_element_by_xpath("//button[contains(@class, 'btn-primary')]").click()
@@ -112,15 +96,15 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 sp.useClass(self.driver, cfg).enterPaxData(test.adult, test.child, test.infant, junior=test.junior, startIndex=1)
                 if airline == "bwa":
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
-                        logger.info("Passenger Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Passenger Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
-                        logger.info("Passenger Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Passenger Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Passenger Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 # Proceed to the Anx Screen
@@ -129,15 +113,15 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 time.sleep(2)
                 if airline == "bwa":
                     if self.driver.find_element_by_class_name("basket-xs").is_displayed():
-                        logger.info("Ancillary Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Ancillary Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
                 else:
                     if self.driver.find_element_by_class_name("header__basket").is_displayed():
-                        logger.info("Ancillary Screen: BASKET IS VISIBLE!")
+                        self.logger.info("Ancillary Screen: BASKET IS VISIBLE!")
                     else:
-                        logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("FAIL! Ancillary Screen: BASKET IS NOT VISIBLE!")
                         self.failSubTest()
 
                 # Proceed to the Summary Screen
@@ -149,16 +133,16 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
                 if airline == "bwa":
                     try:
                         self.driver.find_element_by_class_name("basket-xs").click()
-                        logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
+                        self.logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
                         self.failSubTest()
                     except:
-                        logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
 
                 else:
                     if not self.driver.find_element_by_class_name("header__basket").is_displayed():
-                        logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
+                        self.logger.info("SUCCESS! Summary Screen: BASKET IS NOT VISIBLE!")
                     else:
-                        logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
+                        self.logger.info("FAIL! Summary Screen: BASKET IS VISIBLE!")
                         self.failSubTest()
 
     def skipUpsellScreen(self):
@@ -173,9 +157,9 @@ class EEBKG_SS_BasketHidden(unittest.TestCase):
         except:
             pass
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

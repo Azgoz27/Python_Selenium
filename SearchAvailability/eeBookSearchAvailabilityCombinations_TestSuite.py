@@ -7,10 +7,10 @@ import os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest
+# import unittest
 from eeBookBWA.bwaIBELib import bwaIbeMain
 from eeBookTCV.tcvIBELib import tcvIbeMain
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeqcutils.universalCaseReader import UniversalCaseReader
@@ -20,25 +20,23 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils import eeBookJson
 import json
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
-baseURL = cfg.URL
+# cfg = configurator.Configurator()
+# baseURL = cfg.URL
 initlog.removeOldFile("eeBookSearchAvailability_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBookSearchAvailability_TestSuite_%s" % cfg.gridHost).getLogger()
 airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
-testCases = UniversalCaseReader.getCasesFromFile("./SearchAvailability/{}_EEBKG_SA_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
-
+testData = UniversalCaseReader.getCasesFromFile("./SearchAvailability/{}_EEBKG_SA_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
+filePath = "./SearchAvailability/{}_EEBKG_SA_PaxAndFltCombinations.csv".format(cfg.airline.upper())
 
 class EEBKG_SA_PaxAndFltCombinations(unittest.TestCase, metaclass=GenericMetaTestClass):
     """
     Check if deep link request results in correct search results.
     """
-
-    testData = testCases
-
     def namingSchema(counter,param):
         return "%03d_%s" % (counter, str(param.TCNumber))
 

@@ -4,7 +4,6 @@ Contains tests for eePay db / api response payment comparisons
 # If you want to execute these scripts for "Debug" in Pycharm, just make sure that you define the "workfolder" as the
 # eeBookGEN root folder and not the folder where this script actually is...
 import sys, os
-
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())

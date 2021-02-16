@@ -10,51 +10,35 @@ sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
 from eeqcutils.universalCaseReader import UniversalCaseReader
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+# cfg = configurator.Configurator()
 testData = UniversalCaseReader.getCasesFromFile("./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
+filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookIncludedBags_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookIncludedBags_TestSuite_%s" % cfg.gridHost).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookIncludedBags_TestSuite_%s" % cfg.gridHost).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
-class EEBKG_SS_IncludedBags(unittest.TestCase):
+class EEBKG_SS_IncludedBags(TestFixturesUIBaseClass):
     """
     Used for running eeBook Included checked and cabin Bags test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
-
-    def failSubTest(self, failureMsg=None):
-        """
-        Called when a sub-test fails to take a screenshot and log additional messages if needed.
-        :param failureMsg: String - if set it will be logged as part of unittest fail() method.
-        :return:
-        """
-        try:
-            failureMsg = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-            logger.info("WARNING: Test case not loaded, error message found: {}".format(failureMsg))
-        except:
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/")
-
-        self.fail(failureMsg)
-
-    def setUp(self):
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
+    def __init__(self, tcNumber):
+        super(EEBKG_SS_IncludedBags, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookIncludedBags_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def test_checkIncludedBags(self):
         """
@@ -64,7 +48,7 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
             with self.subTest(case=test):
                 # Set the test case number parameter which is then used for later logging/screenshots
                 self.tcNumber = test.TCNumber
-                logger.info("Running case: {}".format(test.TCNumber))
+                self.logger.info("Running case: {}".format(test.TCNumber))
                 # Build deeplink and loop through each test case
                 sp.useClass(self.driver, cfg).enterTestcase(self.driver,
                                                             baseURL,
@@ -193,7 +177,7 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                     summaryServicesList = pax.find_element_by_class_name("col-md-7")
                     servicesList = summaryServicesList.find_elements_by_class_name("services")
 
-                    # Read cabin and checked baggage for outbound flights
+                    # Read cabin and checked baggage list for outbound flights
                     summaryOutboundServicesList = servicesList[0].find_elements_by_class_name("passenger-service-item")
                     outboundServicesList = []
 
@@ -227,9 +211,7 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                         else:
                             outboundServicesList.append(["No"])
 
-
-
-                    # Read cabin and checked baggage for inbound flights
+                    # Read cabin and checked baggage list for inbound flights
                     if test.type == "RT":
                         summaryInboundServicesList = servicesList[1].find_elements_by_class_name("passenger-service-item")
                         inboundServicesList = []
@@ -279,22 +261,22 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                         inboundBaggageList = (summaryInboundFare, tuple(inboundServicesList))
 
                     # Compare the baggage from the Availability screen with the baggage listed on the Summary Screen
-                    logger.info(
+                    self.logger.info(
                         "Checking if the included baggage on the Availability and Summary screen are a match...")
                     # First check the infant special rule
                     if ((pax.text).split("\n")[1]).upper() == "INFANT":
                         if outboundSelectedBaggage[1][0] == outboundBaggageList[1][0]:
-                            logger.info(
+                            self.logger.info(
                                 "SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
                         else:
-                            logger.info(
+                            self.logger.info(
                                 "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
                             self.failSubTest()
 
                     elif outboundSelectedBaggage == outboundBaggageList:
-                        logger.info("SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
+                        self.logger.info("SUCCESS: Included Outbound Baggage on the Availability and Summary screen are the same!")
                     else:
-                        logger.info(
+                        self.logger.info(
                             "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
                         self.failSubTest()
 
@@ -302,22 +284,20 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
                         # First check the infant special rule
                         if ((pax.text).split("\n")[1]).upper() == "INFANT":
                             if inboundSelectedBaggage[1][0] == inboundBaggageList[1][0]:
-                                logger.info(
+                                self.logger.info(
                                     "SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
                             else:
-                                logger.info(
+                                self.logger.info(
                                     "FAIL: Included Inbound Baggage on the Availability and Summary screen are NOT the same!")
                                 self.failSubTest()
-                        logger.info(
+                        self.logger.info(
                             "Checking if the included Inbound baggage on the Availability and Summary screen are a match...")
                         if inboundSelectedBaggage == inboundBaggageList:
-                            logger.info("SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
+                            self.logger.info("SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
                         else:
-                            logger.info(
+                            self.logger.info(
                                 "FAIL: Included Outbound Baggage on the Availability and Summary screen are NOT the same!")
                             self.failSubTest()
-
-
 
 
     def skipUpsellScreen(self):
@@ -332,9 +312,9 @@ class EEBKG_SS_IncludedBags(unittest.TestCase):
         except:
             pass
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

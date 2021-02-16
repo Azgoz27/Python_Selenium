@@ -6,30 +6,30 @@ Contains test cases for eeBook's Passenger Data dropdown menu validation on pass
 # eeBookGEN root folder and not the folder where this script actually is...
 
 import sys, os
-
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 import random
 import pymysql
 from datetime import date, timedelta
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+# cfg = configurator.Configurator()
 baseURL = cfg.URL
+airline = cfg.airline
 dbConnection = pymysql.connect(host=cfg.host, port=cfg.port, user=cfg.user, passwd=cfg.passwd, db=cfg.db)
 initlog.removeOldFile("eeBookFOC_SSR_Check_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookFOC_SSR_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookFOC_SSR_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -37,24 +37,22 @@ randomOutboundDate = (date.today() + timedelta(random.randint(90, 95))).strftime
 randomInboundDate = (date.today() + timedelta(random.randint(100, 105))).strftime("%d.%m.%Y")
 
 
-class EEBKG_PD_FOC_TestSuite(unittest.TestCase):
+class EEBKG_PD_FOC_TestSuite(TestFixturesUIBaseClass):
     """
     Used for running eeBook Passenger screen FOC SSR test suite.
     """
-
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_PD_FOC_TestSuite, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookFOC_SSR_Check_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def enterTestcaseAndGoToPaxScreen(self):
         """
         Enters flight details / goes to Passenger screen and stores flight data.
         """
         sp.useClass(self.driver, cfg) \
-            .enterTestcase(self.driver, cfg.URL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
+            .enterTestcase(self.driver, baseURL, sp.origin, sp.destination, "RT", randomOutboundDate, randomInboundDate,
                            1, 1, 1, "", "", "", "", sp.appID if airline == "bwa" else sp.fakeIP)
 
         waitForSplashScreenToDissapear(self.driver)
@@ -203,7 +201,7 @@ class EEBKG_PD_FOC_TestSuite(unittest.TestCase):
         """
         Checks if all foc elements for all passengers were clicked
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -214,15 +212,15 @@ class EEBKG_PD_FOC_TestSuite(unittest.TestCase):
         selectedFOCs = self.clickAllFOCs()
 
         if FOCNotSelected not in list(selectedFOCs.values()):
-            logger.info("SUCCESS: All FOC_SSRs were clicked: \n{}".format('\n'.join(sorted(selectedFOCs))))
+            self.logger.info("SUCCESS: All FOC_SSRs were clicked: \n{}".format('\n'.join(sorted(selectedFOCs))))
         else:
-            logger.info("FAIL: Not all FOC_SSRs were clicked, check screenshot")
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
+            self.logger.info("FAIL: Not all FOC_SSRs were clicked, check screenshot")
+            self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

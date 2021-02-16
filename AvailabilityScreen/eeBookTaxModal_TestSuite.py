@@ -8,67 +8,54 @@ import os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest2 as unittest
+# import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
+# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
-testData = UniversalCaseReader.getCasesFromFile("./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
+
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookTaxModal_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookTaxModal_TestSuite_%s" % cfg.gridHost).getLogger()
-airline = cfg.airline
+# logger = initlog.Logger("logs/eeBookTaxModal_TestSuite_%s" % cfg.gridHost).getLogger()
+# cfg = configurator.Configurator()
+testData = UniversalCaseReader.getCasesFromFile("./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper()))
+filePath = "./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper())
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
-class EEBKG_AV_TaxModal(unittest.TestCase):
+class EEBKG_AV_TaxModal(TestFixturesUIBaseClass):
     """
     Used for running eeBook Tax Modal test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
-
-    def failSubTest(self, failureMsg=None):
-        """
-        Called when a sub-test fails to take a screenshot and log additional messages if needed.
-        :param failureMsg: String - if set it will be logged as part of unittest fail() method.
-        :return:
-        """
-        try:
-            failureMsg = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-            logger.info("WARNING: Test case not loaded, error message found: {}".format(failureMsg))
-        except:
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/",
-                                     filePrefix=self.tcNumber + "_" + self._testMethodName)
-
-        self.fail(failureMsg)
+    def __init__(self, tcNumber):
+        super(EEBKG_AV_TaxModal, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookTaxModal_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
     def checkTaxModalDirection(self, direction):
         # Open the Tax modal
         try:
             paxModalList = self.driver.find_element_by_class_name("pax-subtotal")
             time.sleep(1)
-            logger.info("Checking tax modal...")
+            self.logger.info("Checking tax modal...")
             paxModalList.find_element_by_tag_name('a').click()
             time.sleep(1)
         except:
-            logger.info("WARNING: tax modal not found!!!")
+            self.logger.info("WARNING: tax modal not found!!!")
             self.failSubTest()
         # Check if the modal is not empty
         modal = self.driver.find_element_by_class_name("modal-body--tax-details")
         if not modal.text:
-            logger.info("WARNING: Tax modal is empty!!!")
+            self.logger.info("WARNING: Tax modal is empty!!!")
             self.failSubTest()
         else:
             # Set the starting pax type tax totals
@@ -95,7 +82,7 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
 
             # Close the tax modal
             self.driver.find_element_by_class_name("close--tax-details").click()
-            logger.info("SUCCESS: Tax modal successfully checked!")
+            self.logger.info("SUCCESS: Tax modal successfully checked!")
             time.sleep(2)
             # Parse the Taxes per Pax Type from the Flight Price basket
             taxBasketList = []
@@ -120,24 +107,24 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
 
         # Compare the basket and modal taxes per pax type
         if str(round(adultModalTax, 2)) == str(adultBasketTax):
-            logger.info("SUCCESS: Adult Tax in modal and basket are the same!")
+            self.logger.info("SUCCESS: Adult Tax in modal and basket are the same!")
         else:
-            logger.info("FAIL: Adult Tax in modal and basket are NOT the same!")
+            self.logger.info("FAIL: Adult Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(juniorModalTax, 2)) == str(juniorBasketTax):
-            logger.info("SUCCESS: Junior Tax in modal and basket are the same!")
+            self.logger.info("SUCCESS: Junior Tax in modal and basket are the same!")
         else:
-            logger.info("FAIL: Junior Tax in modal and basket are NOT the same!")
+            self.logger.info("FAIL: Junior Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(childModalTax, 2)) == str(childBasketTax):
-            logger.info("SUCCESS: Child Tax in modal and basket are the same!")
+            self.logger.info("SUCCESS: Child Tax in modal and basket are the same!")
         else:
-            logger.info("FAIL: Child Tax in modal and basket are NOT the same!")
+            self.logger.info("FAIL: Child Tax in modal and basket are NOT the same!")
             self.failSubTest()
         if str(round(infantModalTax, 2)) == str(infantBasketTax):
-            logger.info("SUCCESS: Infant Tax in modal and basket are the same!")
+            self.logger.info("SUCCESS: Infant Tax in modal and basket are the same!")
         else:
-            logger.info("FAIL: Infant Tax in modal and basket are NOT the same!")
+            self.logger.info("FAIL: Infant Tax in modal and basket are NOT the same!")
             self.failSubTest()
 
     def test_CheckTaxModal(self):
@@ -147,12 +134,12 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
         If testing fails mark test case as failed and continue to the next case.
         :return:
         """
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
+        # self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         for test in testData:
             with self.subTest(case=test, name="{}_{}-{}-{}".format(test.TCNumber, test.origin, test.destination, test.type)):
                 # Set the test case number parameter which is then used for later logging/screenshots
                 self.tcNumber = test.TCNumber
-                logger.info("Running case: {}".format(test.TCNumber))
+                self.logger.info("Running case: {}".format(test.TCNumber))
 
                 # Build deeplink and loop through each test case
                 sp.useClass(self.driver, cfg).enterTestcase(self.driver,
@@ -181,9 +168,9 @@ class EEBKG_AV_TaxModal(unittest.TestCase):
                 if test.type == "RT":
                     self.checkTaxModalDirection("inbound")
 
-    def tearDown(self):
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)
+    # def tearDown(self):
+    #     # If the driver is still active, close it.
+    #     if self.driver:
+    #         time.sleep(2)
+    #         self.driver.quit()
+    #         time.sleep(2)

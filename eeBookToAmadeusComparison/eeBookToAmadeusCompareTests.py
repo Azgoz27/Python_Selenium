@@ -10,27 +10,29 @@ import glob
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from deepdiff import DeepDiff
 import unittest2 as unittest
 from eeBookGEN.eeBookToAmadeusComparison import eeBookToAmadeusCompareLib
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
+
+# cfg = configurator.Configurator()
 initlog.removeOldFile("eeBook_to_Amadeus_Comparison_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
 logger = initlog.Logger("logs/eeBook_to_Amadeus_Comparison_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-
-# PNRs for testing will be collected from the latest created PNR file or you can supply a path manually
-PNRpath = ("../eeBook{}/createdPNRs/*".format((cfg.airline).upper()))
-fileOfJsonStrings = max(glob.iglob(PNRpath), key=os.path.getctime)
-#fileOfJsonStrings = "../eeBookBWA/createdPNRs/created_PNRs_16.10.2020_07_00_01.txt"
 
 # airline specific parameters:
 airline = cfg.airline
 clientcode = 'BWA'
 system = 'development'
 officeID = 'FLLBW00MA'
+
+# PNRs for testing will be collected from the latest created PNR file or supply a path manually
+PNRpath = ("../eeBook{}/createdPNRs/*".format((airline).upper()))
+fileOfJsonStrings = max(glob.iglob(PNRpath), key=os.path.getctime)
+#fileOfJsonStrings = "../eeBookBWA/createdPNRs/created_PNRs_16.10.2020_07_00_01.txt"
 
 
 class EEBKG_GEN_eeBookToAmadeusCompareTests(unittest.TestCase):
@@ -60,3 +62,4 @@ class EEBKG_GEN_eeBookToAmadeusCompareTests(unittest.TestCase):
                             logger.critical("FAIL: Differences found for PNR {}:".format(test[0].PNR))
                             logger.critical(difference)
                             self.fail(difference)
+
