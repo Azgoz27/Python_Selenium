@@ -9,11 +9,9 @@ import sys
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 import random
 import string
 from datetime import date, timedelta
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
@@ -28,7 +26,6 @@ airline = cfg.airline
 initlog.removeOldFile("eeBookFieldsValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookFieldsValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random string (for names or relationship field)
@@ -200,7 +197,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.enterFields(**testData[0])
@@ -219,7 +215,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         Validates error messages are shown when invalid input data is entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.enterFields(**testData[1])
@@ -240,7 +235,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         Validates error messages are shown when no input data is entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.enterFields(**testData[2])
@@ -261,7 +255,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         Validates no error messages are shown when valid input data is entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         time.sleep(2)
@@ -286,7 +279,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         Validates error messages are shown when invalid input data is entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         time.sleep(2)
@@ -313,7 +305,6 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
         Validates error messages are shown when no input data is entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         time.sleep(2)
@@ -335,9 +326,3 @@ class EEBKG_PD_ValidateFields(TestFixturesUIBaseClass):
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

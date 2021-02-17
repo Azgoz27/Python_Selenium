@@ -9,26 +9,22 @@ import sys
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 import random
 import json
 import requests
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
 airline = cfg.airline
 baseURL = "http://qba.2e-systems.com:7200/qcpay/"
 headers = {"Content-Type": "application/json"}
 initlog.removeOldFile("eeBook_eePayFieldsValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBook_eePayFieldsValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 with open("./eePay/testData_eePayFieldsValidation") as json_file:
@@ -213,7 +209,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         country = [i for i in range(1, sp.numberOfCountries(airline))]
         Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("countryCode"))).select_by_index(random.choice(country))
 
-        if cfg.airline == "bwa":
+        if airline == "bwa":
             # Select Country Phone Number
             countryPhone = [i for i in range(1, sp.numberOfCountries(airline))]
             Select(self.driver.find_element_by_xpath('//*[@id="{}"]'.format("phoneCode"))).select_by_index(random.choice(countryPhone))
@@ -228,7 +224,6 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         :return: list of errors found
         """
         errorsFound = []
-        #self.driver.switch_to.frame(self.driver.find_element_by_id("eepay"))
 
         for element, locator in list(elementDict.items()):
             try:
@@ -244,7 +239,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates no error messages are shown when valid input data is entered for CC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -257,9 +252,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if not found:
-            logger.info("SUCCESS: No errors were found")
+            self.logger.info("SUCCESS: No errors were found")
         else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
+            self.logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -267,7 +262,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates error messages are shown when invalid max char input data is entered for CC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
@@ -278,9 +273,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
@@ -289,7 +284,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates if the Pay button is disabled when no input has been made for CC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
@@ -299,9 +294,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         enabled = self.driver.find_element_by_id("submit-button").is_enabled()
 
         if not enabled:
-            logger.info("SUCCESS: The Pay button has been disabled.")
+            self.logger.info("SUCCESS: The Pay button has been disabled.")
         else:
-            logger.info("FAIL: The Pay button has not been disabled.")
+            self.logger.info("FAIL: The Pay button has not been disabled.")
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -309,7 +304,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates if error messages are shown when invalid character input data is entered for CC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Input test data
@@ -320,9 +315,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
@@ -331,7 +326,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates no error messages are shown when valid input data is entered for DC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
@@ -342,9 +337,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if not found:
-            logger.info("SUCCESS: No errors were found")
+            self.logger.info("SUCCESS: No errors were found")
         else:
-            logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
+            self.logger.info("FAIL: Errors found when none expected. Errors found: %s" % found)
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -352,7 +347,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates error messages are shown when invalid max char input data is entered for DC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
@@ -365,9 +360,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
@@ -376,7 +371,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates if the Pay button is disabled when no input has been made for DC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
@@ -388,9 +383,9 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         enabled = self.driver.find_element_by_id("submit-button").is_enabled()
 
         if not enabled:
-            logger.info("SUCCESS: The Pay button has been disabled.")
+            self.logger.info("SUCCESS: The Pay button has been disabled.")
         else:
-            logger.info("FAIL: The Pay button has not been disabled.")
+            self.logger.info("FAIL: The Pay button has not been disabled.")
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
@@ -398,7 +393,7 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         """
         Validates if error messages are shown when invalid character input data is entered for DC.
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Load the eePay widget
         self.loadEEPayWidget()
         # Select DEBIT card
@@ -411,16 +406,12 @@ class EEBKG_EEPAY_ValidateFields(TestFixturesUIBaseClass):
         found = self.findErrorElements(eePayElements)
 
         if found and found == expected:
-            logger.info("SUCCESS: All expected errors were found")
+            self.logger.info("SUCCESS: All expected errors were found")
         else:
-            logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
+            self.logger.info("FAIL: All expected errors were not found: \nExpected errors: %s\nErrors found: %s"
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
 
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)
+            # TODO
+            # eePayJSON and eePayFieldsValidation script need to be reworked due to TokenEx changes

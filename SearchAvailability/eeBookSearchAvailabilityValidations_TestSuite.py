@@ -8,36 +8,32 @@ import json
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-import unittest
 import datetime
-from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeqcutils import eeBookJson
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
+from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-cfg = configurator.Configurator()
 baseURL = cfg.URL
+airline = cfg.airline
 initlog.removeOldFile("eeBookSearchAvailability_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-logger = initlog.Logger("logs/eeBookSearchAvailability_TestSuite_%s" % cfg.gridHost).getLogger()
-airline = cfg.airline
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
-class EEBKG_SA_Validations(unittest.TestCase):
+class EEBKG_SA_Validations(TestFixturesUIBaseClass):
     """
     Used for running eeBook Flight Search Screen test suite.
     """
-    @classmethod
-    def setUpClass(cls):
-        if not os.path.isdir("./screenshots/"):
-            os.mkdir("screenshots")
-        if not os.path.isdir("./logs/"):
-            os.mkdir("logs")
+    def __init__(self, tcNumber):
+        super(EEBKG_SA_Validations, self).__init__(
+            tcNumber,
+            logFileName="logs/eeBookSearchAvailability_TestSuite",
+            uiErrorSelectors=[(By.XPATH, "//div[@class='alert alert-danger']//small")])
 
 
     def test_UndefinedRoute(self):
@@ -45,7 +41,7 @@ class EEBKG_SA_Validations(unittest.TestCase):
         Check if correct error message is shown in case deep link is containing a undefined route.
         :return:
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -72,9 +68,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADROUTE"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADROUTE"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
 
@@ -84,7 +80,7 @@ class EEBKG_SA_Validations(unittest.TestCase):
         validations are done on the BE side.
         :return:
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -111,9 +107,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -132,9 +128,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -153,9 +149,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYPASSENGERS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -174,9 +170,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYPASSENGERS"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYPASSENGERS"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="TOOMANYINFANTS"
         response = eeBookJson.requestJsonAvail(client=cfg.airline,
@@ -195,9 +191,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "TOOMANYINFANTS"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "TOOMANYINFANTS"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
 
@@ -206,7 +202,7 @@ class EEBKG_SA_Validations(unittest.TestCase):
         Check if correct error message is shown in case deep link contains invalid date.
         :return:
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
@@ -236,9 +232,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADDATE"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADDATE"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # Generate a faulty outbound date
         badOutDate = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%d.%m.%Y")
@@ -260,22 +256,23 @@ class EEBKG_SA_Validations(unittest.TestCase):
         # Collect error code
         errorCode = responseParsed["errors"]["error"][0]["code"]
         # Compare the error codes
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "BADDATE"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "BADDATE"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+
+        self.casePassed = True
 
     def test_MissingParameters(self):
         """
         Check if correct error message is shown in case deep link is missing mandatory parameters.
         :return:
         """
-        logger.info("Test case: %s" % self._testMethodName)
+        self.logger.info("Test case: %s" % self._testMethodName)
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
         self.caseSkipped = False
         self.casePassed = False
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         # Generate a outbound date
         outDate = (datetime.datetime.now() + datetime.timedelta(days=3)).strftime("%d.%m.%Y")
@@ -300,9 +297,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
                                                     )
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "ADT_TYPES_INVALID"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "ADT_TYPES_INVALID"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
 
         # expectedErrorCode="DATE_DEPARTURE_INVALID"
@@ -324,9 +321,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
                                                     )
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "DATE_DEPARTURE_INVALID"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "DATE_DEPARTURE_INVALID"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="NO_ORIGIN"
         sp.useClass(self.driver, cfg).enterTestcase(self.driver,
@@ -347,9 +344,9 @@ class EEBKG_SA_Validations(unittest.TestCase):
                                                     )
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "NO_ORIGIN"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "NO_ORIGIN"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         # expectedErrorCode="NO_DESTIN"
         sp.useClass(self.driver, cfg).enterTestcase(self.driver,
@@ -370,27 +367,8 @@ class EEBKG_SA_Validations(unittest.TestCase):
                                                     )
 
         errorCode = self.driver.find_element_by_xpath("//div[@class='alert alert-danger']//small").text
-        logger.info("Checking error code: %s" % errorCode)
-        assert (errorCode == "NO_DESTIN"), logger.info("FAIL: Wrong error code returned.")
-        logger.info("SUCCESS: Correct error code found: %s" % errorCode)
+        self.logger.info("Checking error code: %s" % errorCode)
+        assert (errorCode == "NO_DESTIN"), self.logger.info("FAIL: Wrong error code returned.")
+        self.logger.info("SUCCESS: Correct error code found: %s" % errorCode)
 
         self.casePassed = True
-
-
-    def tearDown(self):
-        # If the case was skipped, skip everything below.
-        if ((not self.caseSkipped and not self.casePassed) or self.caseSkipped) and self.driver:
-            # If the case failed, take a screen shot.
-            try:
-                self.driver.implicitly_wait(0)
-                logger.info(self.driver.find_element_by_id("errorsection").text)
-                self.driver.implicitly_wait(30)
-            except:
-                self.driver.implicitly_wait(30)
-                pass
-            chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
-        # If the driver is still active, close it.
-        if self.driver:
-            time.sleep(2)
-            self.driver.quit()
-            time.sleep(2)

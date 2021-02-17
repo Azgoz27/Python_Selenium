@@ -8,25 +8,21 @@ import os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
-from eeqcutils import configurator, initlog
+from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
 from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-# cfg = configurator.Configurator()
-testData = UniversalCaseReader.getCasesFromFile("./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
-filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookBasketHidden_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookBasketHidden_TestSuite_%s" % cfg.gridHost).getLogger()
+filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
+testData = UniversalCaseReader.getCasesFromFile(filePath)
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
@@ -156,10 +152,3 @@ class EEBKG_SS_BasketHidden(TestFixturesUIBaseClass):
             time.sleep(2)
         except:
             pass
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

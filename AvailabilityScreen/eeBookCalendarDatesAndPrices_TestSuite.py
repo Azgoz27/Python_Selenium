@@ -9,9 +9,7 @@ import suds
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
@@ -24,11 +22,10 @@ airline = cfg.airline
 initlog.removeOldFile("eeBookCalendarPrices_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookCalendarPrices_TestSuite_%s" % cfg.gridHost).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
-# cfg = configurator.Configurator()
-testData = UniversalCaseReader.getCasesFromFile("./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper()))
-filePath = "./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations_local.csv".format(airline.upper())
+filePath = "./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper())
+testData = UniversalCaseReader.getCasesFromFile(filePath)
+
 
 
 class EEBKG_AV_CalendarDatesAndPrices(TestFixturesUIBaseClass):
@@ -139,7 +136,6 @@ class EEBKG_AV_CalendarDatesAndPrices(TestFixturesUIBaseClass):
             client = suds.client.Client(url="http://tcvint:30010/eebkgbe_support?wsdl")
 
         # Clear cache and build deeplink and loop through each test case
-        # self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         for test in testData:
             with self.subTest(case=test):
                 # Set the test case number parameter which is then used for later logging/screenshots
@@ -182,10 +178,3 @@ class EEBKG_AV_CalendarDatesAndPrices(TestFixturesUIBaseClass):
                     # Check calendar dates and prices for inbound flights 5 days prior
                     self.logger.info("***Looking for priced INBOUND flights in the next 5 days***")
                     self.checkCalendarPrices("inbound", 6, 1)
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

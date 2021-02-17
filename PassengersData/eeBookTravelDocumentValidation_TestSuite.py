@@ -23,13 +23,11 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-# cfg = configurator.Configurator()
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookTravelDocumentValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookTravelDocumentValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -116,9 +114,6 @@ class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
         """
         paxElem = "_%s-%s"
 
-        # self.driver.execute_script("arguments[0].setAttribute('value', ' ')",
-        # Select(self.driver.find_element_by_xpath('//*[@id="%s"]' % documentTypeElem)).options[0])
-
         for paxNumber, passenger in enumerate(sp.paxType, start=1):
             if passenger == 'adult':
                 pax = 'adt'
@@ -196,7 +191,6 @@ class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.selectAndEnterTravelDocument(**testData[0])
@@ -215,7 +209,6 @@ class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
         Validates error messages are shown when invalid values are selected or entered.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.selectAndEnterTravelDocument(**testData[1])
@@ -237,7 +230,6 @@ class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
         This one checks if errors are shown if doc expiration date is before last flight date.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
 
@@ -257,10 +249,3 @@ class EEBKG_PD_ValidateTravelDocument(TestFixturesUIBaseClass):
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

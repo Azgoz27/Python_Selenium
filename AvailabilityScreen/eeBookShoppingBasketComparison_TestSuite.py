@@ -8,9 +8,7 @@ import os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 from eeqcutils.universalCaseReader import UniversalCaseReader
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
@@ -18,16 +16,13 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookShoppingBasketComparison_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookShoppingBasketComparison_TestSuite_%s" % cfg.gridHost).getLogger()
-# cfg = configurator.Configurator()
-testData = UniversalCaseReader.getCasesFromFile("./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper()))
 filePath = "./AvailabilityScreen/{}_EEBKG_AV_PaxAndFltCombinations.csv".format(airline.upper())
+testData = UniversalCaseReader.getCasesFromFile(filePath)
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
@@ -164,7 +159,6 @@ class EEBKG_AV_ShoppingBasketComparison(TestFixturesUIBaseClass):
         If testing fails mark test case as failed and continue to the next case.
         :return:
         """
-        # self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
         for test in testData:
             with self.subTest(case=test):
                 # Set the test case number parameter which is then used for later logging/screenshots
@@ -194,11 +188,3 @@ class EEBKG_AV_ShoppingBasketComparison(TestFixturesUIBaseClass):
 
                 # Start comparing shopping baskets
                 self.compareShoppingBaskets()
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)
-

@@ -9,11 +9,9 @@ import sys, os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 import random
 import pymysql
 from datetime import date, timedelta
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import configurator, initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
@@ -29,7 +27,6 @@ dbConnection = pymysql.connect(host=cfg.host, port=cfg.port, user=cfg.user, pass
 initlog.removeOldFile("eeBookFOC_SSR_Check_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookFOC_SSR_Check_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -217,10 +214,3 @@ class EEBKG_PD_FOC_TestSuite(TestFixturesUIBaseClass):
             self.logger.info("FAIL: Not all FOC_SSRs were clicked, check screenshot")
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

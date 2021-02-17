@@ -8,10 +8,8 @@ import sys, os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 import random
 from datetime import date, timedelta
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
@@ -20,13 +18,11 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-# cfg = configurator.Configurator()
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookDropdownValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookDropdownValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random date (for enterTestCase)
@@ -107,6 +103,7 @@ class EEBKG_PD_ValidateDropdowns(TestFixturesUIBaseClass):
                 pax = 'chd'
             elif passenger == 'infant':
                 pax = 'inf'
+
             # Select title
             titleElem = "title" + paxElem % (pax, paxNumber)
             if passenger == "adult":
@@ -170,7 +167,6 @@ class EEBKG_PD_ValidateDropdowns(TestFixturesUIBaseClass):
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.selectDropdowns(**testData[0])
@@ -189,13 +185,11 @@ class EEBKG_PD_ValidateDropdowns(TestFixturesUIBaseClass):
         Validates error messages are shown when no dropdown values are selected.
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.selectDropdowns(**testData[1])
 
         expectedError = list(dropdownElements.keys())
-        # Removing fqtv error from testing due to development changes
         expected = []
         for error in expectedError:
             if "fqtv" not in error:
@@ -216,7 +210,6 @@ class EEBKG_PD_ValidateDropdowns(TestFixturesUIBaseClass):
         Validates default phone codes are shown when no other selected
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         checkPhoneCode = Select(self.driver.find_element_by_id("phoneCode_adt-1")).first_selected_option
@@ -228,10 +221,3 @@ class EEBKG_PD_ValidateDropdowns(TestFixturesUIBaseClass):
             self.logger.info("FAIL: Default phone code not shown. Code shown: %s" % defaultPhoneCode)
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

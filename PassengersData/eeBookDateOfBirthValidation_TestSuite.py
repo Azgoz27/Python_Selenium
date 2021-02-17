@@ -8,13 +8,11 @@ import sys, os
 sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
-# import unittest2 as unittest
 import random
 from collections import OrderedDict
 from datetimerange import DateTimeRange as timeRange
 from datetime import date, timedelta, datetime
 from dateutil.parser import parse
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import initlog
 from eeBookTCV.tcvIBEUtils.CommonFunctions import waitForSplashScreenToDissapear
@@ -23,14 +21,11 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-# cfg = configurator.Configurator()
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookDateOfBirthValidation_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookDateOfBirthValidation_TestSuite_%s" % cfg.gridHost, multipleLogs=True).getLogger()
-
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 # generate random dates (for enterTestCase)
@@ -168,7 +163,6 @@ class EEBKG_PD_ValidateDOBDropdowns(TestFixturesUIBaseClass):
         # Set these to flags to track the status of the test case. If the case was skipped, it means the browser was
         # not loaded, so the script can just continue. If the case was not skipped, then the browser needs to be closed
         # and if it failed screen shot is also taken.
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.generateDateOfBirthCase(failCase=False)
@@ -189,7 +183,6 @@ class EEBKG_PD_ValidateDOBDropdowns(TestFixturesUIBaseClass):
         (outside of valid ending range).
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.generateDateOfBirthCase()
@@ -212,7 +205,6 @@ class EEBKG_PD_ValidateDOBDropdowns(TestFixturesUIBaseClass):
         (outside of valid starting range - only for child and infant passengers).
         """
         self.logger.info("Test case: %s" % self._testMethodName)
-        self.driver = seleniumBrowser(cfg=cfg, url=baseURL)
 
         self.enterFlightDetailsAndGoToPaxScreen()
         self.generateDateOfBirthCase(endDOB=False)
@@ -228,10 +220,3 @@ class EEBKG_PD_ValidateDOBDropdowns(TestFixturesUIBaseClass):
                         % (expected, found))
             self.chromeTakeFullScreenshot(self.driver, screenshotFolder="./screenshots/", filePrefix=self._testMethodName)
             self.fail("Test case: %s failed, check logs" % self._testMethodName)
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)

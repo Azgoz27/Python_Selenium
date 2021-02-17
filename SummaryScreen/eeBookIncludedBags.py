@@ -10,7 +10,6 @@ sys.path.append("../eeqcutils")
 sys.path.append("..")
 sys.path.append(os.getcwd())
 from eeqcutils.universalCaseReader import UniversalCaseReader
-# from eeqcutils.chromeScreenShooter import chromeTakeFullScreenshot
 from eeqcutils.standardSeleniumImports import *
 from eeqcutils import initlog
 from eeBookGEN.parametersGenerator import ScriptParameters
@@ -18,15 +17,13 @@ from eeBookBWA.bwaIBELib import bwaIbeMain as bIM
 from eeBookTCV.tcvIBELib import tcvIbeMain as tIM
 from eeqcutils.TestFixturesUI import TestFixturesUIBaseClass, cfg
 
-# cfg = configurator.Configurator()
-testData = UniversalCaseReader.getCasesFromFile("./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper()))
-filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
 baseURL = cfg.URL
 airline = cfg.airline
 initlog.removeOldFile("eeBookIncludedBags_TestSuite_", "./logs/", 30)
 initlog.removeOldFile("TC#", "./screenshots/", 30)
 initlog.removeOldFile("test_", "./screenshots/", 30)
-# logger = initlog.Logger("logs/eeBookIncludedBags_TestSuite_%s" % cfg.gridHost).getLogger()
+filePath = "./SummaryScreen/{}_EEBKG_SS_PaxAndFltCombinations.csv".format(cfg.airline.upper())
+testData = UniversalCaseReader.getCasesFromFile(filePath)
 sp = ScriptParameters(airline, airlineClass=bIM if airline == "bwa" else tIM)
 
 
@@ -281,6 +278,8 @@ class EEBKG_SS_IncludedBags(TestFixturesUIBaseClass):
                         self.failSubTest()
 
                     if test.type == "RT":
+                        self.logger.info(
+                            "Checking if the included Inbound baggage on the Availability and Summary screen are a match...")
                         # First check the infant special rule
                         if ((pax.text).split("\n")[1]).upper() == "INFANT":
                             if inboundSelectedBaggage[1][0] == inboundBaggageList[1][0]:
@@ -290,9 +289,8 @@ class EEBKG_SS_IncludedBags(TestFixturesUIBaseClass):
                                 self.logger.info(
                                     "FAIL: Included Inbound Baggage on the Availability and Summary screen are NOT the same!")
                                 self.failSubTest()
-                        self.logger.info(
-                            "Checking if the included Inbound baggage on the Availability and Summary screen are a match...")
-                        if inboundSelectedBaggage == inboundBaggageList:
+
+                        elif inboundSelectedBaggage == inboundBaggageList:
                             self.logger.info("SUCCESS: Included Inbound Baggage on the Availability and Summary screen are the same!")
                         else:
                             self.logger.info(
@@ -311,10 +309,3 @@ class EEBKG_SS_IncludedBags(TestFixturesUIBaseClass):
             time.sleep(2)
         except:
             pass
-
-    # def tearDown(self):
-    #     # If the driver is still active, close it.
-    #     if self.driver:
-    #         time.sleep(2)
-    #         self.driver.quit()
-    #         time.sleep(2)
